@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sparewall</title>
+  <meta name="description" content="Sparewall is an open-source, image-based Linux firewall: a single node or an HA pair, configured from one versioned document.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="Sparewall">
+  <meta property="og:description" content="An open-source, image-based Linux firewall: one node or an HA pair, configured from one versioned document.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="./"><img src="assets/logo.svg" alt="">Sparewall</a>
+      <nav aria-label="Main">
+        <a href="#features">Features</a>
+        <a href="#lifecycle">How it works</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="https://github.com/sparewall/sparewall/tree/main/docs">Docs</a>
+        <a href="https://github.com/sparewall/sparewall">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="wrap">
+        <div>
+          <span class="badge">Pre-release &middot; under active development</span>
+          <h1>One document.<br>One image.<br>One node or a pair.</h1>
+          <p class="lede">Sparewall is an open-source, image-based Linux firewall. Describe the whole deployment in one versioned document; every change is validated, applied atomically, and rolled back unless you confirm it.</p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/sparewall/sparewall/blob/main/docs/getting-started.md">Get started</a>
+            <a class="button" href="https://github.com/sparewall/sparewall">View on GitHub</a>
+          </div>
+        </div>
+        <div>
+          <p class="code-title">site.yaml</p>
+<pre><code><span class="k">schema</span>: 1
+<span class="k">cluster</span>: { <span class="k">nodes</span>: [fw1] }
+<span class="k">management</span>: { <span class="k">network</span>: mgmt }
+<span class="k">ports</span>:
+  <span class="k">fw1</span>:
+    <span class="k">uplink</span>: { <span class="k">nic</span>: <span class="s">"52:54:00:aa:00:01"</span> }
+<span class="k">networks</span>:
+  <span class="k">mgmt</span>:  { <span class="k">port</span>: uplink, <span class="k">role</span>: management,
+           <span class="k">addresses</span>: { <span class="k">fw1</span>: 10.0.99.2/24 } }
+  <span class="k">wan</span>:   { <span class="k">port</span>: uplink, <span class="k">vlan</span>: 10, <span class="k">role</span>: wan,
+           <span class="k">dhcp_client</span>: true }
+  <span class="k">users</span>: { <span class="k">port</span>: uplink, <span class="k">vlan</span>: 20,
+           <span class="k">addresses</span>: { <span class="k">fw1</span>: 192.0.2.2/24 },
+           <span class="k">vip</span>: 192.0.2.1/24 }
+<span class="k">zones</span>:
+  <span class="k">wan</span>:   { <span class="k">networks</span>: [wan] }
+  <span class="k">users</span>: { <span class="k">networks</span>: [users] }
+<span class="k">policy</span>:
+  <span class="k">users->wan</span>: { <span class="k">action</span>: accept, <span class="k">nat</span>: masquerade }
+  <span class="k">wan->self</span>:  { <span class="k">action</span>: drop }
+<span class="k">dhcp</span>:
+  <span class="k">users</span>: { <span class="k">pool</span>: 192.0.2.100-192.0.2.199 }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <section id="features">
+      <div class="wrap">
+        <h2>A firewall you can reason about</h2>
+        <p class="intro">Sparewall treats a firewall like any other piece of infrastructure: declared, versioned, reviewable, and safe to change.</p>
+        <div class="grid">
+          <div class="card">
+            <h3>Image-based and rollback-safe</h3>
+            <p>The OS is a signed <a href="https://bootc-dev.github.io/bootc/">bootc</a> image. An upgrade is a reboot into the new image; a rollback is a reboot into the old one.</p>
+          </div>
+          <div class="card">
+            <h3>One source of truth</h3>
+            <p>One JSON or YAML document describes ports, networks, zones, policy, NAT and services. Every change becomes a numbered generation you can diff, list and roll back to.</p>
+          </div>
+          <div class="card">
+            <h3>Changes that undo themselves</h3>
+            <p>Apply with a confirm timer. If the change cuts you off, the node reverts on its own. Anti-lockout keeps the management path open.</p>
+          </div>
+          <div class="card">
+            <h3>HA when wanted, not required</h3>
+            <p>The same image and document shape run one node or an active/standby pair, with VRRP, connection-state sync and DHCP failover over a WireGuard tunnel.</p>
+          </div>
+          <div class="card">
+            <h3>Zones plus raw rules</h3>
+            <p>Write policy between zones for the common case, and drop to raw nftables rules when you need to. Sparewall owns its own table and never flushes anyone else's.</p>
+          </div>
+          <div class="card">
+            <h3>Swappable services</h3>
+            <p>DHCP, DNS and time run as containerized providers behind a stable interface: Kea, Unbound and chrony by default.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="lifecycle">
+      <div class="wrap">
+        <h2>How a change happens</h2>
+        <p class="intro">The <code>sparewall</code> CLI is a thin client for <code>sparewalld</code>, the coordinator on each node. The coordinator is the only thing that writes daemon configuration.</p>
+        <div class="lifecycle">
+          <ol class="steps">
+            <li><strong>Validate</strong><span>The schema first, then semantic checks: overlapping subnets, rules naming missing zones, pools outside their subnet.</span></li>
+            <li><strong>Render and dry-run</strong><span>Pure renderers produce networkd, nftables, keepalived and provider configuration, and each file is checked by its own tool.</span></li>
+            <li><strong>Activate</strong><span>The new generation goes live as a unit, reloading only what changed, and the confirm timer starts.</span></li>
+            <li><strong>Confirm or revert</strong><span>Confirm to keep it. Miss the deadline and the previous generation comes back, so a change that cuts off your access undoes itself.</span></li>
+            <li><strong>Sync the peer</strong><span>In a pair, the confirmed generation is pushed through the sync tunnel and goes through the same steps on the other node.</span></li>
+          </ol>
+          <div>
+            <p class="code-title">shell</p>
+<pre><code><span class="p">$ </span>sparewall apply -f site.yaml --confirm 120
+<span class="c"># reverts in 120s unless confirmed</span>
+<span class="p">$ </span>sparewall confirm
+<span class="p">$ </span>sparewall set networks.users.vip=192.0.2.254/24
+<span class="p">$ </span>sparewall get policy.'users->wan' -o yaml
+<span class="p">$ </span>sparewall history</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="parts">
+      <div class="wrap">
+        <h2>Built from standard parts</h2>
+        <p class="intro">Almost everything in Sparewall is software you already know. The new code is the coordinator and its CLI, written in Rust.</p>
+        <ul class="parts">
+          <li>systemd-networkd</li>
+          <li>nftables</li>
+          <li>keepalived</li>
+          <li>conntrackd</li>
+          <li>WireGuard</li>
+          <li>Podman</li>
+          <li>Kea</li>
+          <li>Unbound</li>
+          <li>chrony</li>
+          <li>bootc</li>
+          <li>Varlink</li>
+          <li class="new">sparewalld</li>
+          <li class="new">sparewall</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="roadmap">
+      <div class="wrap">
+        <h2>Roadmap</h2>
+        <p class="intro">Sparewall is built bottom-up, and each milestone ends with tests that run in CI. It is not yet ready for production use. The full plan is in the <a href="https://github.com/sparewall/sparewall/blob/main/docs/design.md#development-milestones">design document</a>.</p>
+        <ol class="roadmap">
+          <li><span class="n">0</span><div><strong>Foundations</strong><span>CI, a signed bootc image, license gates</span></div></li>
+          <li><span class="n">1</span><div><strong>Standalone core</strong><span>Coordinator, CLI, schema v1, confirm and rollback</span></div></li>
+          <li><span class="n">2</span><div><strong>Services</strong><span>DHCP, DNS, time, metrics, backup and restore</span></div></li>
+          <li><span class="n">3</span><div><strong>High availability</strong><span>Active/standby pairs, flow and lease continuity</span></div></li>
+          <li><span class="n">4</span><div><strong>Access and secrets</strong><span>Users and roles, ACME, remote-access WireGuard</span></div></li>
+          <li><span class="n">5</span><div><strong>Releases and upgrades</strong><span>Channels, health-gated upgrades, installers</span></div></li>
+          <li><span class="n">6</span><div><strong>Production</strong><span>Hardening, benchmarks, documentation, 1.0</span></div></li>
+          <li><span class="n">7</span><div><strong>Web UI</strong><span>Built against the versioned API</span></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="involved">
+      <div class="wrap">
+        <h2>Get involved</h2>
+        <p class="intro">Sparewall is free software under the GNU GPL v3. Issues, design feedback and pull requests are welcome.</p>
+        <div class="grid">
+          <div class="card">
+            <h3><a href="https://github.com/sparewall/sparewall/tree/main/docs">Read the docs</a></h3>
+            <p>Getting started, pairing, operations, and the full design.</p>
+          </div>
+          <div class="card">
+            <h3><a href="https://github.com/sparewall/sparewall/issues">Report an issue</a></h3>
+            <p>Bugs, questions and ideas go on the issue tracker.</p>
+          </div>
+          <div class="card">
+            <h3><a href="https://github.com/sparewall/.github/blob/main/CONTRIBUTING.md">Contribute</a></h3>
+            <p>How to build, test and send changes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Sparewall &middot; GPL-3.0-only</span>
+      <span><a href="https://github.com/sparewall">github.com/sparewall</a></span>
+    </div>
+  </footer>
+</body>
+</html>
