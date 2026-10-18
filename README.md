@@ -24,7 +24,7 @@ PATH=$PWD/.venv/bin:$PATH ./build-docs.sh ../sparewall v0.1.0 _site/docs
 `requirements-docs.txt` is generated from `requirements-docs.in` with
 `uv pip compile --generate-hashes --python-version 3.12`.
 
-Pushing to `main` deploys through `.github/workflows/pages.yml`, which
+Pull requests build the site without deploying it. Pushing to `main` deploys through `.github/workflows/pages.yml`, which
 assembles the home page and the docs into `_site/` and publishes them. It
 also runs every six hours, so a newly published release reaches the docs
 without a push here; run it by hand to publish one at once.

@@ -3,6 +3,8 @@ name: Pages
 on:
   push:
     branches: [main]
+  # Pull requests build the site, docs included, without deploying it.
+  pull_request:
   # A newly published sparewall release reaches the docs within six hours
   # (or at once, with a manual run): its own workflows cannot start this one
   # without a token for this repository.
@@ -14,8 +16,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: pages-${{ github.event_name == 'pull_request' && github.ref || 'deploy' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -23,6 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+        if: github.event_name != 'pull_request'
       # The docs are those of the latest published release: not main, and
       # not a draft or a prerelease.
       - name: The latest release
@@ -51,11 +54,13 @@ jobs:
           cp -r index.html 404.html assets _site/
           PATH=$PWD/.venv/bin:$PATH ./build-docs.sh upstream "$TAG" _site/docs
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        if: github.event_name != 'pull_request'
         with:
           path: _site
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       pages: write
