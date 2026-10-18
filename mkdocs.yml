@@ -1,0 +1,34 @@
+# The documentation of the latest Sparewall release, built by
+# build-docs.sh into _site/docs/. The pages come from that release's
+# docs/; the theme is this site's own, with no JavaScript.
+site_name: !ENV [DOCS_SITE_NAME, "Sparewall documentation"]
+site_url: https://sparewall.org/docs/
+repo_url: https://github.com/sparewall/sparewall
+docs_dir: !ENV DOCS_DIR
+use_directory_urls: true
+strict: true
+theme:
+  name: null
+  custom_dir: docs-theme
+extra:
+  version: !ENV SPAREWALL_VERSION
+  tag: !ENV SPAREWALL_TAG
+nav:
+  - Overview: index.md
+  - Getting started: getting-started.md
+  - Operations: operations.md
+  - Pairing: pairing.md
+  - Design: design.md
+  - Implementation notes: implementation-notes.md
+  - Releasing: releasing.md
+plugins: []
+markdown_extensions:
+  - tables
+  - fenced_code
+  - toc:
+      permalink: "#"
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn

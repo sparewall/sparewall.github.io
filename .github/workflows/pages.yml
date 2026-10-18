@@ -3,6 +3,11 @@ name: Pages
 on:
   push:
     branches: [main]
+  # A newly published sparewall release reaches the docs within six hours
+  # (or at once, with a manual run): its own workflows cannot start this one
+  # without a token for this repository.
+  schedule:
+    - cron: "17 */6 * * *"
   workflow_dispatch:
 
 permissions:
@@ -18,12 +23,33 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-      # The site is static HTML today. When sparewall has tagged releases, a
-      # step here will build its docs/ with MkDocs into _site/docs/.
+      # The docs are those of the latest published release: not main, and
+      # not a draft or a prerelease.
+      - name: The latest release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh api repos/sparewall/sparewall/releases/latest -q .tag_name)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "docs: sparewall $tag" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: sparewall/sparewall
+          ref: ${{ steps.release.outputs.tag }}
+          path: upstream
+          persist-credentials: false
+      - name: Install MkDocs
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install -q --require-hashes -r requirements-docs.txt
       - name: Assemble site
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
         run: |
           mkdir _site
           cp -r index.html 404.html assets _site/
+          PATH=$PWD/.venv/bin:$PATH ./build-docs.sh upstream "$TAG" _site/docs
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: _site

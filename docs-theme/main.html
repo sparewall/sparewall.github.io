@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if page and page.title and not page.is_homepage %}{{ page.title }} &middot; {% endif %}Sparewall {{ config.extra.version }} documentation</title>
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="{{ '../assets/logo.svg' | url }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ '../assets/style.css' | url }}">
+  <link rel="stylesheet" href="{{ '../assets/docs.css' | url }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="{{ '../' | url }}"><img src="{{ '../assets/logo.svg' | url }}" alt="">Sparewall</a>
+      <nav aria-label="Main">
+        <a href="{{ '../' | url }}">Home</a>
+        <a href="{{ '.' | url }}">Docs</a>
+        <a href="https://github.com/sparewall/sparewall">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap docs">
+    <nav class="docs-nav" aria-label="Documentation">
+      <p class="docs-version">Sparewall <a href="https://github.com/sparewall/sparewall/releases/tag/{{ config.extra.tag }}">{{ config.extra.version }}</a></p>
+      <ul>
+      {%- for item in nav %}
+        <li{% if item.active %} class="active"{% endif %}><a href="{{ item.url | url }}"{% if item.active %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+      {%- endfor %}
+      </ul>
+    </nav>
+    <main class="docs-content">
+      {%- block content %}
+      {{ page.content }}
+      {%- endblock %}
+      {%- if page and page.file and page.file.src_uri != "index.md" %}
+      <p class="docs-source"><a href="https://github.com/sparewall/sparewall/blob/{{ config.extra.tag }}/docs/{{ page.file.src_uri }}">This page on GitHub, at {{ config.extra.tag }}</a></p>
+      {%- endif %}
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Sparewall &middot; GPL-3.0-only</span>
+      <span><a href="https://github.com/sparewall">github.com/sparewall</a></span>
+    </div>
+  </footer>
+</body>
+</html>
