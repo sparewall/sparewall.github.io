@@ -1,0 +1,51 @@
+/* The documentation pages under docs/, built by build-docs.sh. Colours
+   and type come from style.css. */
+
+.docs {
+  display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px;
+  padding-top: 32px; padding-bottom: 56px;
+}
+
+.docs-nav { position: sticky; top: 16px; align-self: start; font-size: 0.95rem; }
+.docs-version { margin: 0 0 12px; color: var(--muted); font-size: 0.9rem; }
+.docs-nav ul { list-style: none; margin: 0; padding: 0; }
+.docs-nav li a {
+  display: block; padding: 6px 10px; border-radius: 6px;
+  color: var(--muted); text-decoration: none;
+}
+.docs-nav li a:hover { color: var(--text); }
+.docs-nav li.active a { background: var(--accent-soft); color: var(--text); font-weight: 600; }
+
+.docs-content { max-width: 50em; }
+.docs-content h1 { font-size: 2rem; margin: 0 0 16px; letter-spacing: -0.01em; }
+.docs-content h2 { font-size: 1.45rem; margin: 40px 0 12px; padding-top: 16px; border-top: 1px solid var(--border); }
+.docs-content h3 { font-size: 1.15rem; margin: 28px 0 8px; }
+.docs-content h4 { font-size: 1rem; margin: 20px 0 6px; }
+.docs-content .headerlink { margin-left: 6px; color: var(--border); text-decoration: none; }
+.docs-content :is(h1, h2, h3, h4):hover .headerlink { color: var(--muted); }
+.docs-content pre { margin: 16px 0; }
+.docs-content :not(pre) > code {
+  padding: 1px 5px; border-radius: 4px;
+  background: var(--surface); border: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.docs-content li { margin: 4px 0; }
+
+.docs-content table {
+  display: block; overflow-x: auto; max-width: 100%;
+  border-collapse: collapse; margin: 16px 0; font-size: 0.95rem;
+}
+.docs-content th, .docs-content td {
+  padding: 8px 12px; border: 1px solid var(--border);
+  text-align: left; vertical-align: top;
+}
+.docs-content th { background: var(--surface); }
+
+.docs-source { margin-top: 48px; font-size: 0.9rem; }
+.docs-source a { color: var(--muted); }
+
+@media (max-width: 860px) {
+  .docs { grid-template-columns: minmax(0, 1fr); gap: 16px; padding-top: 20px; }
+  .docs-nav { position: static; }
+  .docs-nav ul { display: flex; flex-wrap: wrap; gap: 4px; }
+}

@@ -3,22 +3,31 @@
 The Sparewall website, served by GitHub Pages at
 <https://sparewall.github.io/>.
 
-The site is plain static HTML and CSS with no build step and no third-party
-requests. Open `index.html` in a browser to preview it, or serve the
-directory:
+The home page is plain static HTML and CSS with no build step and no
+third-party requests. Open `index.html` in a browser to preview it, or serve
+the directory:
 
 ```shell
 python3 -m http.server -d . 8000
 ```
 
-Pushing to `main` deploys through `.github/workflows/pages.yml`, which
-copies the site into `_site/` and publishes it.
+`/docs/` is the documentation of the latest published sparewall release
+(not main, a draft or a prerelease), built with MkDocs and this site's own
+theme, without JavaScript. To build it locally from a sparewall checkout of a release tag:
 
-## Plans
+```shell
+python3 -m venv .venv
+.venv/bin/pip install --require-hashes -r requirements-docs.txt
+PATH=$PWD/.venv/bin:$PATH ./build-docs.sh ../sparewall v0.1.0 _site/docs
+```
 
-Once [sparewall/sparewall](https://github.com/sparewall/sparewall) has
-tagged releases, the workflow will check out the latest release, build its
-`docs/` with MkDocs, and publish them under `/docs/`.
+`requirements-docs.txt` is generated from `requirements-docs.in` with
+`uv pip compile --generate-hashes --python-version 3.12`.
+
+Pull requests build the site without deploying it. Pushing to `main` deploys through `.github/workflows/pages.yml`, which
+assembles the home page and the docs into `_site/` and publishes them. It
+also runs every six hours, so a newly published release reaches the docs
+without a push here; run it by hand to publish one at once.
 
 ## License
 
