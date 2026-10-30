@@ -41,6 +41,11 @@
 }
 .docs-content th { background: var(--surface); }
 
+.docs-preview {
+  margin: 0 0 24px; padding: 10px 14px; border-radius: 8px;
+  background: var(--accent-soft); font-size: 0.95rem;
+}
+
 .docs-source { margin-top: 48px; font-size: 0.9rem; }
 .docs-source a { color: var(--muted); }
 

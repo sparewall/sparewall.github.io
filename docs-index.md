@@ -10,6 +10,7 @@ code.
 - [Operations](operations.md): day-to-day work on a running node or pair:
   changes, health, upgrades, backups and secrets.
 - [Pairing](pairing.md): turn two nodes into an active/standby pair.
+<!-- api -->
 - [Design](design.md): how Sparewall works and why, and the plan for what
   comes next.
 - [Implementation notes](implementation-notes.md): where the
