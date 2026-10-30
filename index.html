@@ -18,8 +18,9 @@
       <a class="brand" href="./"><img src="assets/logo.svg" alt="">Sparewall</a>
       <nav aria-label="Main">
         <a href="#features">Features</a>
-        <a href="#lifecycle">How it works</a>
-        <a href="#roadmap">Roadmap</a>
+        <a href="#web-ui">Web UI</a>
+        <a href="#install">Install</a>
+        <a href="releases/">Releases</a>
         <a href="docs/">Docs</a>
         <a href="https://github.com/sparewall/sparewall">GitHub</a>
       </nav>
@@ -30,12 +31,12 @@
     <div class="hero">
       <div class="wrap">
         <div>
-          <span class="badge">Early releases &middot; under active development</span>
+          <a class="badge" href="releases/">0.2.0 &middot; 0.3.0 release candidate, with a web UI</a>
           <h1>One document.<br>One image.<br>One node or a pair.</h1>
-          <p class="lede">Sparewall is an open-source, image-based Linux firewall. Describe the whole deployment in one versioned document; every change is validated, applied atomically, and rolled back unless you confirm it.</p>
+          <p class="lede">Sparewall is an open-source, image-based Linux firewall. Describe the whole deployment in one versioned document; every change is validated, applied atomically, and rolled back unless you confirm it. Drive it from the CLI, the HTTP API or, from 0.3.0, a web UI.</p>
           <div class="actions">
-            <a class="button primary" href="docs/getting-started/">Get started</a>
-            <a class="button" href="https://github.com/sparewall/sparewall">View on GitHub</a>
+            <a class="button primary" href="#install">Install</a>
+            <a class="button" href="docs/getting-started/">Get started</a>
           </div>
         </div>
         <div>
@@ -85,7 +86,7 @@
           </div>
           <div class="card">
             <h3>HA when wanted, not required</h3>
-            <p>The same image and document shape run one node or an active/standby pair, with VRRP, connection-state sync and DHCP failover over a WireGuard tunnel.</p>
+            <p>The same image and document shape run one node or an active/standby pair, with VRRP, connection-state sync and DHCP failover over a WireGuard tunnel. <code>sparewall failover</code> moves the gateway back when you choose.</p>
           </div>
           <div class="card">
             <h3>Zones plus raw rules</h3>
@@ -95,7 +96,56 @@
             <h3>Swappable services</h3>
             <p>DHCP, DNS and time run as containerized providers behind a stable interface: Kea, Unbound and chrony by default.</p>
           </div>
+          <div class="card">
+            <h3>Rolling, health-gated upgrades</h3>
+            <p>Run <code>sparewall upgrade</code> on either node of a pair: the backup goes first, and the master follows only once it is healthy. Nodes accept only signed images.</p>
+          </div>
+          <div class="card">
+            <h3>Users, roles and tokens</h3>
+            <p>Named users with passwords, and API tokens for scripts, each with a role: monitor, viewer, operator or admin. Secrets are sealed on the node and shared with the peer.</p>
+          </div>
+          <div class="card">
+            <h3>A CLI for your workstation</h3>
+            <p>Manage nodes over SSH from Linux or macOS, x86_64 or arm64. Install it with Homebrew, or take a static binary from the release.</p>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <section id="web-ui">
+      <div class="wrap">
+        <h2>A web UI, when you want one <span class="badge">New in 0.3.0</span></h2>
+        <p class="intro">From 0.3.0, a node can serve a web UI and an HTTP API on its management network. Both stay off until the document turns them on with <code>sparewall set management.web=true</code>. SSH, the console and the CLI never depend on them.</p>
+        <figure class="shot shot-wide">
+          <picture>
+            <source srcset="assets/screenshots/policy-dark.webp" media="(prefers-color-scheme: dark)">
+            <img src="assets/screenshots/policy-light.webp" width="1600" height="1000" loading="lazy" alt="The zone policy page: a matrix from each zone to each zone, showing accept or drop, NAT and rule counts for every pair.">
+          </picture>
+          <figcaption><strong>Zone policy.</strong> Every pair of zones in one matrix. Edit several pairs, review them together, and apply them as one change.</figcaption>
+        </figure>
+        <div class="shots">
+          <figure class="shot">
+            <picture>
+              <source srcset="assets/screenshots/status-dark.webp" media="(prefers-color-scheme: dark)">
+              <img src="assets/screenshots/status-light.webp" width="1600" height="1000" loading="lazy" alt="The status page: the node is healthy, with all six checks passing, its links up, and its connection count.">
+            </picture>
+            <figcaption><strong>Status.</strong> Health, links and connections as they change, and the history to roll back from.</figcaption>
+          </figure>
+          <figure class="shot">
+            <picture>
+              <source srcset="assets/screenshots/config-dark.webp" media="(prefers-color-scheme: dark)">
+              <img src="assets/screenshots/config-light.webp" width="1600" height="1000" loading="lazy" alt="The configuration page: a sidebar of sections, with a search box, and the networks section open.">
+            </picture>
+            <figcaption><strong>Configuration.</strong> A form built from the document's schema, with a search over every setting. Review the node's own dry run, then apply with a window to confirm in.</figcaption>
+          </figure>
+        </div>
+        <ul class="checks">
+          <li>Each page offers only what the user's role allows, and the node checks every call regardless.</li>
+          <li>Admins manage users and tokens there too. A new password is hashed in the browser, so only the hash reaches the node.</li>
+          <li>The UI loads nothing from outside the node.</li>
+          <li>Scripts use the same API with a token: <code>POST /call/&lt;interface&gt;.&lt;Method&gt;</code>, described by an OpenAPI 3.1 document at <code>/openapi.json</code>.</li>
+        </ul>
+        <p><a href="docs/next/operations/#the-web-ui-and-http-api">The web UI and HTTP API in the 0.3.0 documentation</a></p>
       </div>
     </section>
 
@@ -124,10 +174,36 @@
       </div>
     </section>
 
+    <section id="install">
+      <div class="wrap">
+        <h2>Install</h2>
+        <p class="intro">Every release carries an installer, disk images and the CLI, with SBOMs and signed checksums. The image is also at <code>ghcr.io/sparewall/sparewall</code>, and nodes on the <code>stable</code> channel are offered each new release.</p>
+        <div class="grid">
+          <div class="card">
+            <h3>1. The CLI</h3>
+            <p>On Linux or macOS, x86_64 or arm64:</p>
+<pre><code><span class="p">$ </span>brew install sparewall/tap/sparewall</code></pre>
+          </div>
+          <div class="card">
+            <h3>2. A node</h3>
+            <p>Boot the ISO to install unattended to a blank disk, write the raw image to a disk, or use the qcow2 image for a virtual machine. All three are on the <a href="https://github.com/sparewall/sparewall/releases/latest">latest release</a>.</p>
+          </div>
+          <div class="card">
+            <h3>3. Verify</h3>
+            <p>Check the downloads against the project key, <a href="https://github.com/sparewall/sparewall/blob/main/cosign.pub"><code>cosign.pub</code></a>:</p>
+<pre><code>cosign verify-blob --key cosign.pub \
+  --bundle SHA256SUMS.sigstore.json SHA256SUMS
+sha256sum -c --ignore-missing SHA256SUMS</code></pre>
+          </div>
+        </div>
+        <p class="more"><a href="docs/getting-started/">Getting started</a> takes a node from a fresh install to a working firewall.</p>
+      </div>
+    </section>
+
     <section id="parts">
       <div class="wrap">
         <h2>Built from standard parts</h2>
-        <p class="intro">Almost everything in Sparewall is software you already know. The new code is the coordinator and its CLI, written in Rust.</p>
+        <p class="intro">Almost everything in Sparewall is software you already know. The new code is the coordinator, its CLI and its HTTP gateway, written in Rust, and the web UI.</p>
         <ul class="parts">
           <li>systemd-networkd</li>
           <li>nftables</li>
@@ -140,8 +216,10 @@
           <li>chrony</li>
           <li>bootc</li>
           <li>Varlink</li>
+          <li>Angular</li>
           <li class="new">sparewalld</li>
           <li class="new">sparewall</li>
+          <li class="new">sparewall-httpd</li>
         </ul>
       </div>
     </section>
@@ -149,17 +227,29 @@
     <section id="roadmap">
       <div class="wrap">
         <h2>Roadmap</h2>
-        <p class="intro">Sparewall is built bottom-up, and each milestone ends with tests that run in CI. It is not yet ready for production use. The full plan is in the <a href="docs/design/#development-milestones">design document</a>.</p>
+        <p class="intro">Sparewall is built bottom-up, and each milestone ends with tests that run in CI. Releases so far are 0.x: usable, but the schema and the APIs may still change before 1.0. The full plan is in the <a href="docs/design/#development-milestones">design document</a>.</p>
         <ol class="roadmap">
-          <li><span class="n">0</span><div><strong>Foundations</strong><span>CI, a signed bootc image, license gates</span></div></li>
-          <li><span class="n">1</span><div><strong>Standalone core</strong><span>Coordinator, CLI, schema v1, confirm and rollback</span></div></li>
-          <li><span class="n">2</span><div><strong>Services</strong><span>DHCP, DNS, time, metrics, backup and restore</span></div></li>
-          <li><span class="n">3</span><div><strong>High availability</strong><span>Active/standby pairs, flow and lease continuity</span></div></li>
-          <li><span class="n">4</span><div><strong>Access and secrets</strong><span>Users and roles, ACME, remote-access WireGuard</span></div></li>
-          <li><span class="n">5</span><div><strong>Releases and upgrades</strong><span>Channels, health-gated upgrades, installers</span></div></li>
-          <li><span class="n">6</span><div><strong>Production</strong><span>0.x releases at real sites: hardening, benchmarks, documentation</span></div></li>
-          <li><span class="n">7</span><div><strong>Web UI and HTTP API</strong><span>Opt-in, with roles for every user; then 1.0</span></div></li>
+          <li><span class="n">0</span><div><strong>Foundations</strong><span>CI, a signed bootc image, license gates</span></div><span class="state done">0.1.0</span></li>
+          <li><span class="n">1</span><div><strong>Standalone core</strong><span>Coordinator, CLI, schema v1, confirm and rollback</span></div><span class="state done">0.1.0</span></li>
+          <li><span class="n">2</span><div><strong>Services</strong><span>DHCP, DNS, time, metrics, backup and restore</span></div><span class="state done">0.1.0</span></li>
+          <li><span class="n">3</span><div><strong>High availability</strong><span>Active/standby pairs, flow and lease continuity</span></div><span class="state done">0.1.0</span></li>
+          <li><span class="n">4</span><div><strong>Access and secrets</strong><span>Users and roles, ACME, remote-access WireGuard</span></div><span class="state done">0.1.0</span></li>
+          <li><span class="n">5</span><div><strong>Releases and upgrades</strong><span>Channels, health-gated upgrades, installers</span></div><span class="state done">0.1.0</span></li>
+          <li><span class="n">6</span><div><strong>Production</strong><span>0.x releases at real sites: hardening, benchmarks, documentation</span></div><span class="state">In progress</span></li>
+          <li><span class="n">7</span><div><strong>Web UI and HTTP API</strong><span>Opt-in, with roles for every user; then 1.0</span></div><span class="state">0.3.0</span></li>
         </ol>
+      </div>
+    </section>
+
+    <section id="releases">
+      <div class="wrap">
+        <h2>Releases</h2>
+        <ul class="release-list">
+          <li><a href="releases/#v0.3.0-rc1"><strong>0.3.0-rc1</strong></a><span class="when">October 27, 2026 &middot; release candidate</span><span>The web UI and HTTP API, named users, API tokens with roles, safer secrets, rule logging fixed, and the QEMU guest agent.</span></li>
+          <li><a href="releases/#v0.2.0"><strong>0.2.0</strong></a><span class="when">October 21, 2026 &middot; latest</span><span>The CLI on macOS, arm64 Linux and Homebrew; <code>sparewall failover</code>; opt-in password logins over SSH; node names as hostnames.</span></li>
+          <li><a href="releases/#v0.1.3"><strong>0.1.3</strong></a><span class="when">October 19, 2026</span><span>Upgrades from either node of a pair, and from a node already tracking the channel.</span></li>
+        </ul>
+        <p class="more"><a href="releases/">Every release</a></p>
       </div>
     </section>
 
@@ -170,7 +260,7 @@
         <div class="grid">
           <div class="card">
             <h3><a href="docs/">Read the docs</a></h3>
-            <p>Getting started, pairing, operations, and the full design.</p>
+            <p>Getting started, operations, pairing, the HTTP API, and the full design.</p>
           </div>
           <div class="card">
             <h3><a href="https://github.com/sparewall/sparewall/issues">Report an issue</a></h3>

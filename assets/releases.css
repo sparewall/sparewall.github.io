@@ -1,0 +1,23 @@
+/* The releases page. Colours and type come from style.css. */
+
+.releases { padding-top: 40px; padding-bottom: 56px; max-width: 860px; }
+.releases h1 { font-size: 2.2rem; margin: 0 0 12px; letter-spacing: -0.02em; }
+.releases .intro { color: var(--muted); margin: 0 0 24px; }
+
+.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.toc a {
+  padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); text-decoration: none; font-size: 0.9rem;
+}
+.toc a:hover { border-color: var(--accent); }
+
+.release { padding: 32px 0; border-top: 1px solid var(--border); scroll-margin-top: 16px; }
+.release h2 { font-size: 1.6rem; margin: 0; letter-spacing: -0.01em; }
+.release h2 .badge { vertical-align: middle; margin-left: 8px; font-size: 0.75rem; letter-spacing: 0; }
+.release .badge.latest { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+.release .when { margin: 6px 0 16px; color: var(--muted); font-size: 0.95rem; }
+.release .lede { font-size: 1.05rem; }
+.release h3 { font-size: 1rem; margin: 20px 0 6px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.release ul { padding-left: 1.2em; margin: 0; }
+.release li { margin: 8px 0; }
+.release code { overflow-wrap: anywhere; }

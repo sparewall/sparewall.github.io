@@ -1,6 +1,7 @@
 # The documentation of the latest Sparewall release, built by
 # build-docs.sh into _site/docs/. The pages come from that release's
-# docs/; the theme is this site's own, with no JavaScript.
+# docs/; the theme is this site's own, with no JavaScript. build-docs.sh
+# runs a copy of this file, dropping the HTTP API before 0.3.0.
 site_name: !ENV [DOCS_SITE_NAME, "Sparewall documentation"]
 site_url: https://sparewall.org/docs/
 repo_url: https://github.com/sparewall/sparewall
@@ -13,11 +14,15 @@ theme:
 extra:
   version: !ENV SPAREWALL_VERSION
   tag: !ENV SPAREWALL_TAG
+  # From a page's directory URL to the site root.
+  root: !ENV [DOCS_ROOT, "../"]
+  preview: !ENV [DOCS_PREVIEW, ""]
 nav:
   - Overview: index.md
   - Getting started: getting-started.md
   - Operations: operations.md
   - Pairing: pairing.md
+  - HTTP API: api/README.md
   - Design: design.md
   - Implementation notes: implementation-notes.md
   - Releasing: releasing.md
