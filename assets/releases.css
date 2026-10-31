@@ -21,3 +21,7 @@
 .release ul { padding-left: 1.2em; margin: 0; }
 .release li { margin: 8px 0; }
 .release code { overflow-wrap: anywhere; }
+.release h4 { font-size: 0.95rem; margin: 16px 0 6px; }
+.release li > p { margin: 0; }
+.release li > ul { margin-top: 6px; }
+.release pre { margin: 12px 0; }
