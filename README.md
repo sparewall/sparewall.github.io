@@ -3,12 +3,20 @@
 The Sparewall website, served by GitHub Pages at
 <https://sparewall.github.io/>.
 
-The home page and `releases/` are plain static HTML and CSS with no build step and no
-third-party requests. Open `index.html` in a browser to preview it, or serve
-the directory:
+The home page and `releases/` are plain static HTML and CSS with no
+third-party requests. Their release history (the home page's badge and
+release list, and every entry on `releases/`) is filled in at build time
+from the release notes on GitHub, by `build-releases.py`, in place of
+the `<!-- ... -->` placeholders. An entry is a release's notes up to
+`## What's Changed`; `notes/TAG.md` replaces the notes of a release
+whose notes on GitHub don't read well on their own. To preview the
+site with its release history:
 
 ```shell
-python3 -m http.server -d . 8000
+mkdir _site && cp -r index.html 404.html releases assets _site/
+gh api --paginate repos/sparewall/sparewall/releases | jq -s add > releases.json
+.venv/bin/python build-releases.py releases.json _site
+python3 -m http.server -d _site 8000
 ```
 
 `/docs/` is the documentation of the latest published sparewall release
@@ -30,18 +38,19 @@ PATH=$PWD/.venv/bin:$PATH ./build-docs.sh --preview ../sparewall-next v0.3.0-rc1
 
 Pull requests build the site without deploying it. Pushing to `main` deploys through `.github/workflows/pages.yml`, which
 assembles the home page and the docs into `_site/` and publishes them. It
-also runs every six hours, so a newly published release reaches the docs
-without a push here; run it by hand to publish one at once.
+also runs every six hours, so a newly published release reaches the site
+(its notes and its docs) without a push here; run it by hand to publish
+one at once.
 
 ## With each release
 
-The home page and `releases/index.html` describe releases by hand. When
-one is published:
+Nothing, usually: the next scheduled build lists the release, links the
+docs and badge to it, and moves a replaced prerelease to the list of
+earlier ones. Edit the release's notes on GitHub, not this repository,
+to change what the site says about it. By hand, when they change:
 
-- Add it to `releases/index.html`, from its GitHub notes, and update the
-  home page's badge, release list and roadmap.
-- When a final release replaces a prerelease, links to `docs/next/` stop
-  working: point them at `docs/`.
+- The roadmap and the features the home page describes, such as a
+  "New in" badge.
 - New UI screenshots go in `assets/screenshots/` as WebP, a light and a
   dark one each, 1600 pixels wide, taken from the demo
   (`tests/vm/demo.sh` in sparewall). Check them for anything that

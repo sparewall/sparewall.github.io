@@ -5,7 +5,7 @@ on:
     branches: [main]
   # Pull requests build the site, docs included, without deploying it.
   pull_request:
-  # A newly published sparewall release reaches the docs within six hours
+  # A newly published sparewall release reaches the site within six hours
   # (or at once, with a manual run): its own workflows cannot start this one
   # without a token for this repository.
   schedule:
@@ -36,12 +36,15 @@ jobs:
         run: |
           latest=$(gh api repos/sparewall/sparewall/releases/latest)
           tag=$(jq -r .tag_name <<<"$latest")
+          # Every release, for the release history and to find the next.
+          gh api --paginate repos/sparewall/sparewall/releases |
+            jq -s add > "$RUNNER_TEMP/releases.json"
           # The newest prerelease published after the latest release.
-          next=$(gh api --paginate repos/sparewall/sparewall/releases |
-            jq -rs --arg after "$(jq -r .published_at <<<"$latest")" '
-              [.[][] | select(.prerelease and (.draft | not)
-                              and .published_at > $after)]
-              | sort_by(.published_at) | last | .tag_name // empty')
+          next=$(jq -r --arg after "$(jq -r .published_at <<<"$latest")" '
+              [.[] | select(.prerelease and (.draft | not)
+                            and .published_at > $after)]
+              | sort_by(.published_at) | last | .tag_name // empty' \
+            "$RUNNER_TEMP/releases.json")
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "next=$next" >> "$GITHUB_OUTPUT"
           echo "docs: sparewall $tag${next:+, and $next in docs/next/}" >> "$GITHUB_STEP_SUMMARY"
@@ -70,6 +73,7 @@ jobs:
           mkdir _site
           cp -r index.html 404.html releases assets _site/
           export PATH=$PWD/.venv/bin:$PATH
+          python3 build-releases.py "$RUNNER_TEMP/releases.json" _site
           ./build-docs.sh upstream "$TAG" _site/docs
           # After docs/, which MkDocs empties before it builds.
           if [ -n "$NEXT" ]; then
