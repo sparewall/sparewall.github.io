@@ -22,6 +22,7 @@ import json
 import pathlib
 import re
 import sys
+from html.parser import HTMLParser
 
 import markdown
 
@@ -30,6 +31,13 @@ REPO = "https://github.com/sparewall/sparewall"
 BOILERPLATE = ("what's changed", "new contributors", "installing and upgrading",
                "verifying the downloads")
 HOME_RELEASES = 3
+# What the notes may put on the page. The site runs no JavaScript and
+# loads nothing from elsewhere, so the HTML from Markdown is cut down to
+# these tags, with no attributes but a link's href.
+ALLOWED = {"a", "blockquote", "br", "code", "del", "em", "h3", "h4", "h5",
+           "h6", "hr", "li", "ol", "p", "pre", "strong", "table", "tbody",
+           "td", "th", "thead", "tr", "ul"}
+VOID = {"br", "hr"}
 
 
 def version(r):
@@ -74,7 +82,48 @@ def to_html(text, shift=1):
     text = "\n".join(out)
     # #123 is an issue or pull request, as on GitHub.
     text = re.sub(r"(?<![\w/&#`\[])#(\d+)\b", rf"[#\1]({REPO}/issues/\1)", text)
-    return markdown.markdown(text, extensions=["fenced_code", "tables", "sane_lists"])
+    md = markdown.Markdown(extensions=["fenced_code", "tables", "sane_lists"])
+    # Raw HTML in the notes is shown as text, not passed through.
+    md.preprocessors.deregister("html_block")
+    md.inlinePatterns.deregister("html")
+    return sanitize(md.convert(text))
+
+
+class _Sanitizer(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.out = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "img":
+            # An image would load from elsewhere: keep its alt text.
+            alt = dict(attrs).get("alt")
+            if alt:
+                self.out.append(html.escape(alt))
+        elif tag in ALLOWED:
+            href = dict(attrs).get("href") if tag == "a" else None
+            if href and re.match(r"(https?:|mailto:|#|[^:]*$)", href, re.I):
+                self.out.append(f'<a href="{html.escape(href)}">')
+            else:
+                self.out.append(f"<{tag}>")
+
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+
+    def handle_endtag(self, tag):
+        if tag in ALLOWED and tag not in VOID:
+            self.out.append(f"</{tag}>")
+
+    def handle_data(self, data):
+        self.out.append(html.escape(data, quote=False))
+
+
+def sanitize(fragment):
+    """fragment with only the ALLOWED tags, and only safe links."""
+    s = _Sanitizer()
+    s.feed(fragment)
+    s.close()
+    return "".join(s.out)
 
 
 def inline(text):
