@@ -90,7 +90,7 @@
           <ol class="captions">
             <li><strong>Zone-based firewall.</strong> Write policy between zones; nftables enforces it, and anything not allowed is dropped.</li>
             <li><strong>Designed for failover.</strong> A pair shares the gateway address. If the active node fails, the standby takes over and connections carry on.</li>
-            <li><strong>Secure by default.</strong> An immutable, signed bootc image, internal services written in Rust, and node-to-node traffic only over WireGuard.</li>
+            <li><strong>Secure by default.</strong> An immutable, signed bootc image, internal services written in Rust, and replication between the nodes inside WireGuard.</li>
             <li><strong>DHCP and DNS in containers.</strong> ISC Kea and Unbound run as containers, pinned by digest.</li>
             <li><strong>WireGuard VPN for remote users.</strong> Peers are entries in the document, and the VPN is a zone like any other.</li>
             <li><strong>Metrics and backups.</strong> Prometheus metrics for rules, connections, links and health, and encrypted configuration backups with restic.</li>
@@ -119,7 +119,7 @@
             <ul>
               <li>An immutable, signed <a href="https://bootc-dev.github.io/bootc/">bootc</a> image: an upgrade or a rollback is a reboot.</li>
               <li>Sparewall's own services are written in Rust, in their own SELinux domains.</li>
-              <li>The nodes of a pair talk only over WireGuard, on a VLAN of their own.</li>
+              <li>Connection state, DHCP failover and configuration pushes between the nodes run inside WireGuard, authenticated and encrypted. They share the LAN by default; a dedicated sync VLAN isolates them further.</li>
               <li>Named users and API tokens, each with a role: monitor, viewer, operator or admin.</li>
             </ul>
           </div>
