@@ -39,31 +39,64 @@
             <a class="button" href="docs/getting-started/">Get started</a>
           </div>
         </div>
-        <div>
-          <p class="code-title">site.yaml</p>
-<pre><code><span class="k">schema</span>: 1
-<span class="k">cluster</span>: { <span class="k">nodes</span>: [fw1] }
-<span class="k">management</span>: { <span class="k">network</span>: mgmt }
-<span class="k">ports</span>:
-  <span class="k">fw1</span>:
-    <span class="k">uplink</span>: { <span class="k">nic</span>: <span class="s">"52:54:00:aa:00:01"</span> }
-<span class="k">networks</span>:
-  <span class="k">mgmt</span>:  { <span class="k">port</span>: uplink, <span class="k">role</span>: management,
-           <span class="k">addresses</span>: { <span class="k">fw1</span>: 10.0.99.2/24 } }
-  <span class="k">wan</span>:   { <span class="k">port</span>: uplink, <span class="k">vlan</span>: 10, <span class="k">role</span>: wan,
-           <span class="k">dhcp_client</span>: true }
-  <span class="k">users</span>: { <span class="k">port</span>: uplink, <span class="k">vlan</span>: 20,
-           <span class="k">addresses</span>: { <span class="k">fw1</span>: 192.0.2.2/24 },
-           <span class="k">vip</span>: 192.0.2.1/24 }
-<span class="k">zones</span>:
-  <span class="k">wan</span>:   { <span class="k">networks</span>: [wan] }
-  <span class="k">users</span>: { <span class="k">networks</span>: [users] }
-<span class="k">policy</span>:
-  <span class="k">users->wan</span>: { <span class="k">action</span>: accept, <span class="k">nat</span>: masquerade }
-  <span class="k">wan->self</span>:  { <span class="k">action</span>: drop }
-<span class="k">dhcp</span>:
-  <span class="k">users</span>: { <span class="k">pool</span>: 192.0.2.100-192.0.2.199 }</code></pre>
-        </div>
+        <figure class="tour" aria-labelledby="tour-title">
+          <p class="code-title" id="tour-title">Inside a Sparewall pair</p>
+          <svg viewBox="0 0 400 560" role="img" aria-hidden="true" focusable="false">
+            <!-- The track packets take between the Internet and the LAN. -->
+            <path class="track s1" d="M30 50V510"/>
+
+            <g class="ext s1"><rect x="10" y="10" width="140" height="40" rx="8"/><text x="80" y="35">Internet</text></g>
+            <g class="ext s5"><rect x="250" y="10" width="140" height="40" rx="8"/><text x="320" y="35">Remote laptop</text></g>
+            <g class="s5"><path class="tunnel" d="M320 50V80"/><text class="tiny start" x="328" y="69">WireGuard</text></g>
+
+            <rect class="frame" x="10" y="80" width="380" height="400" rx="14"/>
+
+            <g class="s2">
+              <g class="node fw1"><rect x="50" y="96" width="130" height="70" rx="8"/><text class="name" x="115" y="120">fw1</text>
+                <text class="state up" x="115" y="138">active</text><text class="state down" x="115" y="138">failed</text></g>
+              <g class="node fw2"><rect x="244" y="96" width="130" height="70" rx="8"/><text class="name" x="309" y="120">fw2</text>
+                <text class="state up" x="309" y="138">standby</text><text class="state down" x="309" y="138">active</text></g>
+              <g class="gateway"><rect x="70" y="146" width="90" height="16" rx="8"/><text x="115" y="158">gateway</text></g>
+            </g>
+            <g class="s3"><path class="sync" d="M180 131H244"/><text class="tiny" x="212" y="124">WireGuard</text></g>
+
+            <g class="s1">
+              <rect class="row" x="50" y="182" width="324" height="74" rx="8"/>
+              <text class="label start" x="62" y="201">Zones &middot; nftables</text>
+              <g class="chip ok"><rect x="62" y="212" width="146" height="30" rx="15"/><text x="135" y="232">users &rarr; wan &#x2713;</text></g>
+              <g class="chip bad"><rect x="216" y="212" width="146" height="30" rx="15"/><text x="289" y="232">wan &rarr; self &#x2717;</text></g>
+            </g>
+
+            <g class="s4">
+              <g class="box"><rect x="50" y="272" width="157" height="58" rx="8"/><text class="name" x="128" y="297">Kea</text><text class="sub" x="128" y="317">DHCP &middot; container</text></g>
+              <g class="box"><rect x="217" y="272" width="157" height="58" rx="8"/><text class="name" x="295" y="297">Unbound</text><text class="sub" x="295" y="317">DNS &middot; container</text></g>
+            </g>
+
+            <g class="box s3"><rect x="50" y="346" width="324" height="52" rx="8"/><text class="name" x="212" y="368">Immutable bootc image</text><text class="sub" x="212" y="388">internal services written in Rust</text></g>
+
+            <g class="box s7"><rect x="50" y="414" width="324" height="50" rx="8"/><text class="name" x="212" y="435">HTTP API &middot; CLI &middot; web UI</text><text class="sub" x="212" y="454">the web UI is off by default</text></g>
+
+            <g class="s6"><path class="link" d="M200 480V510M330 480V510"/></g>
+            <g class="ext s1"><rect x="10" y="510" width="120" height="40" rx="8"/><text x="70" y="535">LAN</text></g>
+            <g class="ext s6"><rect x="140" y="510" width="120" height="40" rx="8"/><text x="200" y="535">Prometheus</text></g>
+            <g class="ext s6"><rect x="270" y="510" width="120" height="40" rx="8"/><text x="330" y="535">restic backup</text></g>
+
+            <!-- Packets: allowed out from the LAN, dropped coming in, and
+                 still flowing during a failover. -->
+            <circle class="packet p-out" cx="30" cy="0" r="6"/>
+            <circle class="packet p-drop" cx="30" cy="0" r="6"/>
+            <circle class="packet p-fail" cx="30" cy="0" r="6"/>
+          </svg>
+          <ol class="captions">
+            <li><strong>Zone-based firewall.</strong> Write policy between zones; nftables enforces it, and anything not allowed is dropped.</li>
+            <li><strong>Designed for failover.</strong> A pair shares the gateway address. If the active node fails, the standby takes over and connections carry on.</li>
+            <li><strong>Secure by default.</strong> An immutable, signed bootc image, internal services written in Rust, and replication between the nodes inside WireGuard.</li>
+            <li><strong>DHCP and DNS in containers.</strong> ISC Kea and Unbound run as containers, pinned by digest.</li>
+            <li><strong>WireGuard VPN for remote users.</strong> Peers are entries in the document, and the VPN is a zone like any other.</li>
+            <li><strong>Metrics and backups.</strong> Prometheus metrics for rules, connections, links and health, and encrypted configuration backups with restic.</li>
+            <li><strong>API-driven.</strong> The CLI, your scripts and the web UI all drive the same API. The web UI stays off until you turn it on.</li>
+          </ol>
+        </figure>
       </div>
     </div>
 
@@ -71,42 +104,57 @@
       <div class="wrap">
         <h2>A firewall you can reason about</h2>
         <p class="intro">Sparewall treats a firewall like any other piece of infrastructure: declared, versioned, reviewable, and safe to change.</p>
-        <div class="grid">
+        <div class="grid groups">
           <div class="card">
-            <h3>Image-based and rollback-safe</h3>
-            <p>The OS is a signed <a href="https://bootc-dev.github.io/bootc/">bootc</a> image. An upgrade is a reboot into the new image; a rollback is a reboot into the old one.</p>
+            <h3>Designed for failover</h3>
+            <ul>
+              <li>One node or an active/standby pair, from the same image and the same document shape.</li>
+              <li>VRRP moves the gateway; connection state and DHCP leases are synced, so connections carry on.</li>
+              <li>Rolling, health-gated upgrades: the backup goes first, and the master follows only once it is healthy.</li>
+              <li><code>sparewall failover</code> moves the gateway back when you choose.</li>
+            </ul>
           </div>
           <div class="card">
-            <h3>One source of truth</h3>
-            <p>One JSON or YAML document describes ports, networks, zones, policy, NAT and services. Every change becomes a numbered generation you can diff, list and roll back to.</p>
+            <h3>Secure by default</h3>
+            <ul>
+              <li>An immutable, signed <a href="https://bootc-dev.github.io/bootc/">bootc</a> image: an upgrade or a rollback is a reboot.</li>
+              <li>Sparewall's own services are written in Rust, in their own SELinux domains.</li>
+              <li>Connection state, DHCP failover and configuration pushes between the nodes run inside WireGuard, authenticated and encrypted. On two-NIC setups without VLANs, they share the LAN; a dedicated sync VLAN is an option for stronger isolation.</li>
+              <li>Named users and API tokens, each with a role: monitor, viewer, operator or admin.</li>
+            </ul>
           </div>
           <div class="card">
-            <h3>Changes that undo themselves</h3>
-            <p>Apply with a confirm timer. If the change cuts you off, the node reverts on its own. Anti-lockout keeps the management path open.</p>
+            <h3>Network and services</h3>
+            <ul>
+              <li>Policy between zones, enforced by nftables, with raw rules when you need them. Sparewall never flushes anyone else's tables.</li>
+              <li>DHCP (ISC Kea) and caching DNS (Unbound) as containers, pinned by digest.</li>
+              <li>A WireGuard VPN for remote users: peers are entries in the document.</li>
+            </ul>
           </div>
           <div class="card">
-            <h3>HA when wanted, not required</h3>
-            <p>The same image and document shape run one node or an active/standby pair, with VRRP, connection-state sync and DHCP failover over a WireGuard tunnel. <code>sparewall failover</code> moves the gateway back when you choose.</p>
+            <h3>One document, safe changes</h3>
+            <ul>
+              <li>One JSON or YAML document describes the whole deployment. Every change is a numbered generation to diff, list and roll back to.</li>
+              <li>Apply with a confirm timer: a change that cuts you off undoes itself.</li>
+              <li>The CLI, your scripts and the web UI drive the same API. The web UI is off by default.</li>
+            </ul>
           </div>
           <div class="card">
-            <h3>Zones plus raw rules</h3>
-            <p>Write policy between zones for the common case, and drop to raw nftables rules when you need to. Sparewall owns its own table and never flushes anyone else's.</p>
+            <h3>Operations</h3>
+            <ul>
+              <li>Prometheus metrics: per-rule counters, connection tracking, links, health, the configuration generation and backup age.</li>
+              <li>Scheduled, encrypted backups of the configuration and secrets with restic.</li>
+              <li>The CLI for Linux and macOS, x86_64 or arm64, from Homebrew or the release.</li>
+            </ul>
           </div>
-          <div class="card">
-            <h3>Swappable services</h3>
-            <p>DHCP, DNS and time run as containerized providers behind a stable interface: Kea, Unbound and chrony by default.</p>
-          </div>
-          <div class="card">
-            <h3>Rolling, health-gated upgrades</h3>
-            <p>Run <code>sparewall upgrade</code> on either node of a pair: the backup goes first, and the master follows only once it is healthy. Nodes accept only signed images.</p>
-          </div>
-          <div class="card">
-            <h3>Users, roles and tokens</h3>
-            <p>Named users with passwords, and API tokens for scripts, each with a role: monitor, viewer, operator or admin. Secrets are sealed on the node and shared with the peer.</p>
-          </div>
-          <div class="card">
-            <h3>A CLI for your workstation</h3>
-            <p>Manage nodes over SSH from Linux or macOS, x86_64 or arm64. Install it with Homebrew, or take a static binary from the release.</p>
+          <div class="card planned">
+            <h3>Planned</h3>
+            <ul>
+              <li><a href="https://github.com/sparewall/sparewall/issues/106">IPv6 routing</a>: DHCPv6 and prefix delegation on the WAN, router advertisements inside.</li>
+              <li>WireGuard <a href="https://github.com/sparewall/sparewall/issues/148">site-to-site tunnels</a>, and <a href="https://github.com/sparewall/sparewall/issues/149">a WireGuard client</a> for chosen zones.</li>
+              <li><a href="https://github.com/sparewall/sparewall/issues/75">Pi-hole</a> as a containerized DNS provider.</li>
+              <li><a href="https://github.com/sparewall/sparewall/issues/144">PXE options</a> for network boot.</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -162,7 +210,30 @@
             <li><strong>Sync the peer</strong><span>In a pair, the confirmed generation is pushed through the sync tunnel and goes through the same steps on the other node.</span></li>
           </ol>
           <div>
-            <p class="code-title">shell</p>
+            <p class="code-title">site.yaml</p>
+<pre><code><span class="k">schema</span>: 1
+<span class="k">cluster</span>: { <span class="k">nodes</span>: [fw1] }
+<span class="k">management</span>: { <span class="k">network</span>: mgmt }
+<span class="k">ports</span>:
+  <span class="k">fw1</span>:
+    <span class="k">uplink</span>: { <span class="k">nic</span>: <span class="s">"52:54:00:aa:00:01"</span> }
+<span class="k">networks</span>:
+  <span class="k">mgmt</span>:  { <span class="k">port</span>: uplink, <span class="k">role</span>: management,
+           <span class="k">addresses</span>: { <span class="k">fw1</span>: 10.0.99.2/24 } }
+  <span class="k">wan</span>:   { <span class="k">port</span>: uplink, <span class="k">vlan</span>: 10, <span class="k">role</span>: wan,
+           <span class="k">dhcp_client</span>: true }
+  <span class="k">users</span>: { <span class="k">port</span>: uplink, <span class="k">vlan</span>: 20,
+           <span class="k">addresses</span>: { <span class="k">fw1</span>: 192.0.2.2/24 },
+           <span class="k">vip</span>: 192.0.2.1/24 }
+<span class="k">zones</span>:
+  <span class="k">wan</span>:   { <span class="k">networks</span>: [wan] }
+  <span class="k">users</span>: { <span class="k">networks</span>: [users] }
+<span class="k">policy</span>:
+  <span class="k">users->wan</span>: { <span class="k">action</span>: accept, <span class="k">nat</span>: masquerade }
+  <span class="k">wan->self</span>:  { <span class="k">action</span>: drop }
+<span class="k">dhcp</span>:
+  <span class="k">users</span>: { <span class="k">pool</span>: 192.0.2.100-192.0.2.199 }</code></pre>
+            <p class="code-title shell-title">shell</p>
 <pre><code><span class="p">$ </span>sparewall apply -f site.yaml --confirm 120
 <span class="c"># reverts in 120s unless confirmed</span>
 <span class="p">$ </span>sparewall confirm

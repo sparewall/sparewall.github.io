@@ -1,3 +1,4 @@
 _site/
 .venv/
 releases.json
+__pycache__/

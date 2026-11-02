@@ -217,3 +217,126 @@ h2 .badge { vertical-align: middle; margin-left: 8px; font-size: 0.75rem; letter
   .shots { grid-template-columns: minmax(0, 1fr); }
   .release-list li { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* The feature tour in the hero: an SVG of a pair, one part lit at a
+   time with its caption below. CSS only. Without motion (or with
+   prefers-reduced-motion) every part is lit and the captions are a list. */
+:root { --ok: #15803d; --bad: #b91c1c; --tour-step: 4.5s; --tour-cycle: 31.5s; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --ok: #4ade80; --bad: #f87171; }
+}
+.tour { margin: 0; }
+.tour svg { display: block; width: 100%; height: auto; font: 14px var(--sans); }
+.tour text { fill: var(--text); text-anchor: middle; }
+.tour text.start { text-anchor: start; }
+.tour rect { fill: var(--bg); stroke: var(--border); stroke-width: 1.5; }
+.tour .frame { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; }
+.tour .ext rect { fill: var(--surface); stroke-dasharray: 4 3; stroke: var(--muted); }
+.tour .name { font-weight: 700; font-size: 15px; }
+.tour .sub, .tour .state { fill: var(--muted); font-size: 12px; }
+.tour .label { fill: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.tour .tiny { fill: var(--muted); font-size: 10px; }
+.tour .node rect { stroke: var(--accent); stroke-width: 2; }
+.tour .gateway rect { fill: var(--accent); stroke: none; }
+.tour .gateway text { fill: var(--bg); font-size: 11px; font-weight: 700; }
+.tour .chip.ok rect { stroke: var(--ok); }
+.tour .chip.ok text { fill: var(--ok); font-weight: 600; }
+.tour .chip.bad rect { stroke: var(--bad); }
+.tour .chip.bad text { fill: var(--bad); font-weight: 600; }
+.tour .track, .tour .link { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+.tour .sync, .tour .tunnel { stroke: var(--accent); stroke-width: 3; fill: none; stroke-dasharray: 6 4; }
+.tour .packet { fill: var(--accent); opacity: 0; }
+.tour .state.down { opacity: 0; }
+
+.captions { list-style: none; margin: 14px 0 0; padding: 0; }
+.captions li { margin: 0 0 10px; color: var(--muted); font-size: 0.97rem; }
+.captions strong { color: var(--text); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .tour .s1, .tour .s2, .tour .s3, .tour .s4, .tour .s5, .tour .s6, .tour .s7 {
+    animation: tour-spot var(--tour-cycle) infinite both;
+  }
+  .tour .s2 { animation-delay: calc(1 * var(--tour-step)); }
+  .tour .s3 { animation-delay: calc(2 * var(--tour-step)); }
+  .tour .s4 { animation-delay: calc(3 * var(--tour-step)); }
+  .tour .s5 { animation-delay: calc(4 * var(--tour-step)); }
+  .tour .s6 { animation-delay: calc(5 * var(--tour-step)); }
+  .tour .s7 { animation-delay: calc(6 * var(--tour-step)); }
+
+  .tour .sync, .tour .tunnel { animation: tour-flow 0.8s linear infinite; }
+  .tour .p-out { animation: tour-p-out var(--tour-cycle) infinite; }
+  .tour .p-drop { animation: tour-p-drop var(--tour-cycle) infinite; }
+  .tour .p-fail { animation: tour-p-fail var(--tour-cycle) infinite; }
+  .tour .fw1 rect { animation: tour-fw1 var(--tour-cycle) infinite; }
+  .tour .fw1 .up { animation: tour-fw1-up var(--tour-cycle) infinite; }
+  .tour .fw1 .down { animation: tour-fw1-down var(--tour-cycle) infinite; }
+  .tour .fw2 .up { animation: tour-fw2-up var(--tour-cycle) infinite; }
+  .tour .fw2 .down { animation: tour-fw2-down var(--tour-cycle) infinite; }
+  .tour .gateway { animation: tour-gateway var(--tour-cycle) infinite; }
+
+  /* One caption at a time, in one grid cell, with a bar for the step. */
+  .captions { display: grid; position: relative; padding-bottom: 8px; }
+  .captions li { grid-area: 1 / 1; margin: 0; opacity: 0; animation: tour-caption var(--tour-cycle) infinite both; }
+  .captions li:nth-child(2) { animation-delay: calc(1 * var(--tour-step)); }
+  .captions li:nth-child(3) { animation-delay: calc(2 * var(--tour-step)); }
+  .captions li:nth-child(4) { animation-delay: calc(3 * var(--tour-step)); }
+  .captions li:nth-child(5) { animation-delay: calc(4 * var(--tour-step)); }
+  .captions li:nth-child(6) { animation-delay: calc(5 * var(--tour-step)); }
+  .captions li:nth-child(7) { animation-delay: calc(6 * var(--tour-step)); }
+  .captions::after {
+    content: ""; position: absolute; left: 0; bottom: 0; height: 3px; width: 100%;
+    background: var(--accent); border-radius: 2px; transform-origin: left;
+    animation: tour-bar var(--tour-step) linear infinite;
+  }
+  .tour:hover *, .tour:hover .captions::after { animation-play-state: paused; }
+}
+
+/* A step is 1/7 of the cycle: 14.29%. */
+@keyframes tour-spot {
+  0% { opacity: 0.3; } 1.5%, 12.8% { opacity: 1; } 14.29%, 100% { opacity: 0.3; }
+}
+@keyframes tour-caption {
+  0% { opacity: 0; } 1.5%, 12.8% { opacity: 1; } 14.29%, 100% { opacity: 0; }
+}
+@keyframes tour-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes tour-flow { from { stroke-dashoffset: 10; } to { stroke-dashoffset: 0; } }
+@keyframes tour-p-out {
+  0%, 2% { transform: translateY(520px); opacity: 0; }
+  2.5% { opacity: 1; }
+  8% { transform: translateY(40px); opacity: 1; }
+  9%, 100% { transform: translateY(40px); opacity: 0; }
+}
+@keyframes tour-p-drop {
+  0%, 7% { transform: translateY(40px); opacity: 0; fill: var(--accent); }
+  7.5% { opacity: 1; }
+  10.5% { transform: translateY(205px); opacity: 1; fill: var(--accent); }
+  11% { fill: var(--bad); }
+  13%, 100% { transform: translateY(205px); opacity: 0; fill: var(--bad); }
+}
+@keyframes tour-p-fail {
+  0%, 20% { transform: translateY(520px); opacity: 0; }
+  20.5% { opacity: 1; }
+  26% { transform: translateY(40px); opacity: 1; }
+  27%, 100% { transform: translateY(40px); opacity: 0; }
+}
+@keyframes tour-fw1 {
+  0%, 15.5% { stroke: var(--accent); stroke-dasharray: none; }
+  16%, 28% { stroke: var(--bad); stroke-dasharray: 5 4; }
+  28.5%, 100% { stroke: var(--accent); stroke-dasharray: none; }
+}
+@keyframes tour-fw1-up { 0%, 15.5% { opacity: 1; } 16%, 28% { opacity: 0; } 28.5%, 100% { opacity: 1; } }
+@keyframes tour-fw1-down { 0%, 15.5% { opacity: 0; } 16%, 28% { opacity: 1; } 28.5%, 100% { opacity: 0; } }
+@keyframes tour-fw2-up { 0%, 18.5% { opacity: 1; } 19%, 28% { opacity: 0; } 28.5%, 100% { opacity: 1; } }
+@keyframes tour-fw2-down { 0%, 18.5% { opacity: 0; } 19%, 28% { opacity: 1; } 28.5%, 100% { opacity: 0; } }
+@keyframes tour-gateway {
+  0%, 17% { transform: translateX(0); }
+  19%, 28% { transform: translateX(194px); }
+  28.5%, 100% { transform: translateX(0); }
+}
+.shell-title { margin-top: 20px; }
+
+/* Feature groups */
+.groups .card ul { margin: 0; padding-left: 1.1em; color: var(--muted); font-size: 0.97rem; }
+.groups .card li { margin: 6px 0; }
+.groups .card.planned { border-style: dashed; background: transparent; }
+@media (max-width: 1000px) and (min-width: 861px) { .groups { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
