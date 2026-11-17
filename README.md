@@ -49,8 +49,13 @@ docs and badge to it, and moves a replaced prerelease to the list of
 earlier ones. Edit the release's notes on GitHub, not this repository,
 to change what the site says about it. By hand, when they change:
 
-- The roadmap and the features the home page describes, such as a
-  "New in" badge.
+- The roadmap and the features the home page describes: the tour's
+  captions and the feature cards. Keep version numbers out of that
+  copy, so it doesn't go stale.
+- The Planned card: drop an item once its issue ships in a release, and
+  add the feature to the cards.
+- The `site.yaml` example in "How a change happens" must stay a valid
+  document for the latest release.
 - New UI screenshots go in `assets/screenshots/` as WebP, a light and a
   dark one each, 1600 pixels wide, taken from the demo
   (`tests/vm/demo.sh` in sparewall). Check them for anything that
