@@ -33,7 +33,7 @@
         <div>
           <!-- latest-badge -->
           <h1>One document.<br>One image.<br>One node or a pair.</h1>
-          <p class="lede">Sparewall is an open-source, image-based Linux firewall. Describe the whole deployment in one versioned document; every change is validated, applied atomically, and rolled back unless you confirm it. Drive it from the CLI, the HTTP API or, from 0.3.0, a web UI.</p>
+          <p class="lede">Sparewall is an open-source, image-based Linux firewall. Describe the whole deployment in one versioned document; every change is validated, applied atomically, and rolled back unless you confirm it. Drive it from the CLI, the HTTP API or a web UI.</p>
           <div class="actions">
             <a class="button primary" href="#install">Install</a>
             <a class="button" href="docs/getting-started/">Get started</a>
@@ -63,7 +63,7 @@
             <g class="s1">
               <rect class="row" x="50" y="182" width="324" height="74" rx="8"/>
               <text class="label start" x="62" y="201">Zones &middot; nftables</text>
-              <g class="chip ok"><rect x="62" y="212" width="146" height="30" rx="15"/><text x="135" y="232">users &rarr; wan &#x2713;</text></g>
+              <g class="chip ok"><rect x="62" y="212" width="146" height="30" rx="15"/><text x="135" y="232">lan &rarr; wan &#x2713;</text></g>
               <g class="chip bad"><rect x="216" y="212" width="146" height="30" rx="15"/><text x="289" y="232">wan &rarr; self &#x2717;</text></g>
             </g>
 
@@ -88,12 +88,12 @@
             <circle class="packet p-fail" cx="30" cy="0" r="6"/>
           </svg>
           <ol class="captions">
-            <li><strong>Zone-based firewall.</strong> Write policy between zones; nftables enforces it, and anything not allowed is dropped.</li>
+            <li><strong>Zone-based firewall.</strong> Write policy between zones, once for IPv4 and IPv6; nftables enforces it, and anything not allowed is dropped.</li>
             <li><strong>Designed for failover.</strong> A pair shares the gateway address. If the active node fails, the standby takes over and connections carry on.</li>
             <li><strong>Secure by default.</strong> An immutable, signed bootc image, internal services written in Rust, and replication between the nodes inside WireGuard.</li>
             <li><strong>DHCP and DNS in containers.</strong> ISC Kea and Unbound run as containers, pinned by digest.</li>
-            <li><strong>WireGuard VPN for remote users.</strong> Peers are entries in the document, and the VPN is a zone like any other.</li>
-            <li><strong>Metrics and backups.</strong> Prometheus metrics for rules, connections, links and health, and encrypted configuration backups with restic.</li>
+            <li><strong>WireGuard VPNs.</strong> For remote users, to other sites, and out through a VPN provider. Peers are entries in the document, and each VPN is a zone like any other.</li>
+            <li><strong>Metrics and backups.</strong> Prometheus metrics, with their history kept on the node if you like, and encrypted configuration backups with restic.</li>
             <li><strong>API-driven.</strong> The CLI, your scripts and the web UI all drive the same API. The web UI stays off until you turn it on.</li>
           </ol>
         </figure>
@@ -110,7 +110,7 @@
             <ul>
               <li>One node or an active/standby pair, from the same image and the same document shape.</li>
               <li>VRRP moves the gateway; connection state and DHCP leases are synced, so connections carry on.</li>
-              <li>Rolling, health-gated upgrades: the backup goes first, and the master follows only once it is healthy.</li>
+              <li>Rolling, health-gated upgrades: the backup goes first, and the master follows only once it is healthy. Start one yourself, or let the node upgrade in a maintenance window.</li>
               <li><code>sparewall failover</code> moves the gateway back when you choose.</li>
             </ul>
           </div>
@@ -126,9 +126,11 @@
           <div class="card">
             <h3>Network and services</h3>
             <ul>
-              <li>Policy between zones, enforced by nftables, with raw rules when you need them. Sparewall never flushes anyone else's tables.</li>
+              <li>Policy between zones, for IPv4 and IPv6, enforced by nftables, with raw rules when you need them. Sparewall never flushes anyone else's tables.</li>
               <li>DHCP (ISC Kea) and caching DNS (Unbound) as containers, pinned by digest.</li>
-              <li>A WireGuard VPN for remote users: peers are entries in the document.</li>
+              <li>IPv6 routing: DHCPv6 with prefix delegation, SLAAC or static on the WAN, and router advertisements inside, with no renumbering at a failover.</li>
+              <li>WireGuard for remote users and site-to-site tunnels, and as a client of a VPN provider for chosen networks, with a kill switch.</li>
+              <li>Two NICs and no VLANs by default; VLAN trunks and LACP or active-backup bonds when you have them.</li>
             </ul>
           </div>
           <div class="card">
@@ -142,18 +144,19 @@
           <div class="card">
             <h3>Operations</h3>
             <ul>
-              <li>Prometheus metrics: per-rule counters, connection tracking, links, health, the configuration generation and backup age.</li>
-              <li>Scheduled, encrypted backups of the configuration and secrets with restic.</li>
+              <li>Prometheus metrics for an outside Prometheus, or a Prometheus on the node that keeps their history, queried through the API.</li>
+              <li>Logs forwarded to any syslog collector, over UDP, TCP, TLS or RELP.</li>
+              <li>A background check for new releases, shown in <code>sparewall status</code>, the login banner and the web UI.</li>
+              <li>Scheduled, encrypted backups of the configuration and secrets with restic, pruned to a retention policy.</li>
               <li>The CLI for Linux and macOS, x86_64 or arm64, from Homebrew or the release.</li>
             </ul>
           </div>
           <div class="card planned">
             <h3>Planned</h3>
             <ul>
-              <li><a href="https://github.com/sparewall/sparewall/issues/106">IPv6 routing</a>: DHCPv6 and prefix delegation on the WAN, router advertisements inside.</li>
-              <li>WireGuard <a href="https://github.com/sparewall/sparewall/issues/148">site-to-site tunnels</a>, and <a href="https://github.com/sparewall/sparewall/issues/149">a WireGuard client</a> for chosen zones.</li>
               <li><a href="https://github.com/sparewall/sparewall/issues/75">Pi-hole</a> as a containerized DNS provider.</li>
               <li><a href="https://github.com/sparewall/sparewall/issues/144">PXE options</a> for network boot.</li>
+              <li><a href="https://github.com/sparewall/sparewall/issues/217">DHCPv6</a> on inside networks, and <a href="https://github.com/sparewall/sparewall/issues/218">IPv6 through VPN tunnels</a>, after 1.0.</li>
             </ul>
           </div>
         </div>
@@ -162,8 +165,8 @@
 
     <section id="web-ui">
       <div class="wrap">
-        <h2>A web UI, when you want one <span class="badge">New in 0.3.0</span></h2>
-        <p class="intro">From 0.3.0, a node can serve a web UI and an HTTP API on its management network. Both stay off until the document turns them on with <code>sparewall set management.web=true</code>. SSH, the console and the CLI never depend on them.</p>
+        <h2>A web UI, when you want one</h2>
+        <p class="intro">A node can serve a web UI and an HTTP API on its management network. Both stay off until the document turns them on with <code>sparewall set management.web=true</code>. SSH, the console and the CLI never depend on them.</p>
         <figure class="shot shot-wide">
           <picture>
             <source srcset="assets/screenshots/policy-dark.webp" media="(prefers-color-scheme: dark)">
@@ -189,9 +192,9 @@
         </div>
         <ul class="checks">
           <li>Each page offers only what the user's role allows, and the node checks every call regardless.</li>
-          <li>Admins manage users and tokens there too. A new password is hashed in the browser, so only the hash reaches the node.</li>
+          <li>Admins see when an update is available and can start the upgrade there, and manage users and tokens. A new password is hashed in the browser, so only the hash reaches the node.</li>
           <li>The UI loads nothing from outside the node.</li>
-          <li>Scripts use the same API with a token: <code>POST /call/&lt;interface&gt;.&lt;Method&gt;</code>, described by an OpenAPI 3.1 document at <code>/openapi.json</code>.</li>
+          <li>Scripts use the same API with a token: <code>POST /call/&lt;interface&gt;.&lt;Method&gt;</code>, described by an OpenAPI 3.1 document at <code>/openapi.json</code>. The UI's API page lists every call with the role it needs and a <code>curl</code> example.</li>
         </ul>
         <p><a href="docs/operations/#the-web-ui-and-http-api">The web UI and HTTP API in the documentation</a></p>
       </div>
@@ -213,32 +216,32 @@
             <p class="code-title">site.yaml</p>
 <pre><code><span class="k">schema</span>: 1
 <span class="k">cluster</span>: { <span class="k">nodes</span>: [fw1] }
-<span class="k">management</span>: { <span class="k">network</span>: mgmt }
+<span class="k">management</span>: { <span class="k">network</span>: lan, <span class="k">sources</span>: [192.168.1.10] }
 <span class="k">ports</span>:
   <span class="k">fw1</span>:
-    <span class="k">uplink</span>: { <span class="k">nic</span>: <span class="s">"52:54:00:aa:00:01"</span> }
+    <span class="k">wan0</span>: { <span class="k">nic</span>: <span class="s">"52:54:00:aa:00:01"</span> }
+    <span class="k">lan0</span>: { <span class="k">nic</span>: <span class="s">"52:54:00:aa:00:02"</span> }
 <span class="k">networks</span>:
-  <span class="k">mgmt</span>:  { <span class="k">port</span>: uplink, <span class="k">role</span>: management,
-           <span class="k">addresses</span>: { <span class="k">fw1</span>: 10.0.99.2/24 } }
-  <span class="k">wan</span>:   { <span class="k">port</span>: uplink, <span class="k">vlan</span>: 10, <span class="k">role</span>: wan,
-           <span class="k">dhcp_client</span>: true }
-  <span class="k">users</span>: { <span class="k">port</span>: uplink, <span class="k">vlan</span>: 20,
-           <span class="k">addresses</span>: { <span class="k">fw1</span>: 192.0.2.2/24 },
-           <span class="k">vip</span>: 192.0.2.1/24 }
+  <span class="k">wan</span>: { <span class="k">port</span>: wan0, <span class="k">role</span>: wan, <span class="k">dhcp_client</span>: true,
+         <span class="k">ipv6</span>: { <span class="k">mode</span>: dhcpv6 } }
+  <span class="k">lan</span>: { <span class="k">port</span>: lan0, <span class="k">role</span>: management,
+         <span class="k">addresses</span>: { <span class="k">fw1</span>: 192.168.1.1/24 },
+         <span class="k">ipv6</span>: { <span class="k">mode</span>: delegated, <span class="k">subnet_id</span>: 1 } }
 <span class="k">zones</span>:
-  <span class="k">wan</span>:   { <span class="k">networks</span>: [wan] }
-  <span class="k">users</span>: { <span class="k">networks</span>: [users] }
+  <span class="k">wan</span>: { <span class="k">networks</span>: [wan] }
+  <span class="k">lan</span>: { <span class="k">networks</span>: [lan] }
 <span class="k">policy</span>:
-  <span class="k">users->wan</span>: { <span class="k">action</span>: accept, <span class="k">nat</span>: masquerade }
-  <span class="k">wan->self</span>:  { <span class="k">action</span>: drop }
+  <span class="k">lan-&gt;wan</span>:  { <span class="k">action</span>: accept, <span class="k">nat</span>: masquerade }
+  <span class="k">wan-&gt;self</span>: { <span class="k">action</span>: drop }
 <span class="k">dhcp</span>:
-  <span class="k">users</span>: { <span class="k">pool</span>: 192.0.2.100-192.0.2.199 }</code></pre>
+  <span class="k">lan</span>: { <span class="k">pool</span>: 192.168.1.100-192.168.1.199 }
+<span class="k">dns</span>: { <span class="k">enabled</span>: true }</code></pre>
             <p class="code-title shell-title">shell</p>
 <pre><code><span class="p">$ </span>sparewall apply -f site.yaml --confirm 120
 <span class="c"># reverts in 120s unless confirmed</span>
 <span class="p">$ </span>sparewall confirm
-<span class="p">$ </span>sparewall set networks.users.vip=192.0.2.254/24
-<span class="p">$ </span>sparewall get policy.'users->wan' -o yaml
+<span class="p">$ </span>sparewall set dhcp.lan.pool=192.168.1.50-192.168.1.199
+<span class="p">$ </span>sparewall get policy.'lan->wan' -o yaml
 <span class="p">$ </span>sparewall history</code></pre>
           </div>
         </div>
@@ -248,7 +251,7 @@
     <section id="install">
       <div class="wrap">
         <h2>Install</h2>
-        <p class="intro">Every release carries an installer, disk images and the CLI, with SBOMs and signed checksums. The image is also at <code>ghcr.io/sparewall/sparewall</code>, and nodes on the <code>stable</code> channel are offered each new release.</p>
+        <p class="intro">Every release carries an installer, disk images and the CLI, with SBOMs and signed checksums. The image is also at <code>ghcr.io/sparewall/sparewall</code>, and nodes on the <code>stable</code> channel are offered each new release, or upgrade themselves in a maintenance window.</p>
         <div class="grid">
           <div class="card">
             <h3>1. The CLI</h3>
@@ -307,7 +310,7 @@ sha256sum -c --ignore-missing SHA256SUMS</code></pre>
           <li><span class="n">4</span><div><strong>Access and secrets</strong><span>Users and roles, ACME, remote-access WireGuard</span></div><span class="state done">0.1.0</span></li>
           <li><span class="n">5</span><div><strong>Releases and upgrades</strong><span>Channels, health-gated upgrades, installers</span></div><span class="state done">0.1.0</span></li>
           <li><span class="n">6</span><div><strong>Production</strong><span>0.x releases at real sites: hardening, benchmarks, documentation</span></div><span class="state">In progress</span></li>
-          <li><span class="n">7</span><div><strong>Web UI and HTTP API</strong><span>Opt-in, with roles for every user; then 1.0</span></div><span class="state">0.3.0, then 1.0</span></li>
+          <li><span class="n">7</span><div><strong>Web UI and HTTP API</strong><span>Opt-in, with roles for every user</span></div><span class="state done">0.3.0</span></li>
         </ol>
       </div>
     </section>
