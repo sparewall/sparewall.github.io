@@ -6,9 +6,15 @@
   <title>Sparewall: open-source Linux firewall</title>
   <meta name="description" content="Sparewall is an open-source, image-based Linux firewall: a single node or an HA pair, configured from one versioned document.">
   <meta name="color-scheme" content="light dark">
-  <meta property="og:title" content="Sparewall">
+  <meta property="og:title" content="Sparewall: open-source Linux firewall">
   <meta property="og:description" content="An open-source, image-based Linux firewall: one node or an HA pair, configured from one versioned document.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sparewall.org/">
+  <meta property="og:image" content="https://sparewall.org/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Sparewall, an open-source Linux firewall: One document. One image. One node or a pair. Beside it, a diagram of a Sparewall pair.">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -18,7 +24,7 @@
       <a class="brand" href="./"><img src="assets/logo.svg" alt="">Sparewall</a>
       <nav aria-label="Main">
         <a href="#features">Features</a>
-        <a href="#web-ui">Web UI</a>
+        <a class="wide" href="#web-ui">Web UI</a>
         <a href="#install">Install</a>
         <a href="releases/">Releases</a>
         <a href="docs/">Docs</a>
@@ -345,7 +351,12 @@ sha256sum -c --ignore-missing SHA256SUMS</code></pre>
   <footer class="site-footer">
     <div class="wrap">
       <span>Sparewall &middot; GPL-3.0-only</span>
-      <span><a href="https://github.com/sparewall">github.com/sparewall</a></span>
+      <nav aria-label="Footer">
+        <a href="docs/">Docs</a>
+        <a href="releases/">Releases</a>
+        <a href="https://github.com/sparewall/sparewall/issues">Issues</a>
+        <a href="https://github.com/sparewall">GitHub</a>
+      </nav>
     </div>
   </footer>
 </body>

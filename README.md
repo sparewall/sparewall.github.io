@@ -56,6 +56,9 @@ to change what the site says about it. By hand, when they change:
   add the feature to the cards.
 - The `site.yaml` example in "How a change happens" must stay a valid
   document for the latest release.
+- `assets/og.png`, the preview image for shared links, is a render of
+  the hero's diagram: regenerate it with `og-image.py` (see its
+  docstring) when the diagram or the tagline changes.
 - New UI screenshots go in `assets/screenshots/` as WebP, a light and a
   dark one each, 1600 pixels wide, taken from the demo
   (`tests/vm/demo.sh` in sparewall). Check them for anything that
