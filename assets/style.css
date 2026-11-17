@@ -364,3 +364,4 @@ h2 .badge { vertical-align: middle; margin-left: 8px; font-size: 0.75rem; letter
   .compare td { border: 0; padding: 2px 12px; }
   .compare td::before { content: attr(data-label) ": "; color: var(--text); font-weight: 600; }
 }
+.compare-wrap + .note { margin: 10px 0 0; color: var(--muted); font-size: 0.9rem; }
