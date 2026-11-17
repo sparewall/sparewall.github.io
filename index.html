@@ -106,49 +106,44 @@
         <p class="intro">Sparewall treats a firewall like any other piece of infrastructure: declared, versioned, reviewable, and safe to change.</p>
         <div class="grid groups">
           <div class="card">
-            <h3>Designed for failover</h3>
+            <h3>Upgrades without surprises</h3>
             <ul>
-              <li>One node or an active/standby pair, from the same image and the same document shape.</li>
-              <li>VRRP moves the gateway; connection state and DHCP leases are synced, so connections carry on.</li>
-              <li>Rolling, health-gated upgrades: the backup goes first, and the master follows only once it is healthy. Start one yourself, or let the node upgrade in a maintenance window.</li>
-              <li><code>sparewall failover</code> moves the gateway back when you choose.</li>
+              <li>Rolling, health-gated upgrades: in a pair, the backup goes first, and the master follows only once it is healthy.</li>
+              <li>Start one from the CLI or the web UI, or let the node upgrade itself in a maintenance window. It accepts only signed images.</li>
+              <li>A background check shows new releases in <code>sparewall status</code>, the login banner and the web UI.</li>
             </ul>
           </div>
           <div class="card">
-            <h3>Secure by default</h3>
+            <h3>Pairs you control</h3>
             <ul>
-              <li>An immutable, signed <a href="https://bootc-dev.github.io/bootc/">bootc</a> image: an upgrade or a rollback is a reboot.</li>
-              <li>Sparewall's own services are written in Rust, in their own SELinux domains.</li>
-              <li>Connection state, DHCP failover and configuration pushes between the nodes run inside WireGuard, authenticated and encrypted. On two-NIC setups without VLANs, they share the LAN; a dedicated sync VLAN is an option for stronger isolation.</li>
+              <li><code>sparewall failover</code> moves the gateway back when you choose, from either node.</li>
+              <li>Upgrades and configuration changes start from either node, and the pair stays in step.</li>
+              <li>A two-NIC pair needs no VLANs. <a href="docs/pairing/">Running a pair</a> covers the layouts and what each isolates.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Users, roles and secrets</h3>
+            <ul>
               <li>Named users and API tokens, each with a role: monitor, viewer, operator or admin.</li>
+              <li>Secrets are encrypted on the node, bound to its TPM where it has one, and shared with the peer.</li>
+              <li><code>management.sources</code> limits which hosts reach SSH and HTTPS.</li>
+              <li>Sparewall's own services run in their own enforcing SELinux domains.</li>
             </ul>
           </div>
           <div class="card">
-            <h3>Network and services</h3>
+            <h3>Networking in detail</h3>
             <ul>
-              <li>Policy between zones, for IPv4 and IPv6, enforced by nftables, with raw rules when you need them. Sparewall never flushes anyone else's tables.</li>
-              <li>DHCP (ISC Kea) and caching DNS (Unbound) as containers, pinned by digest.</li>
-              <li>IPv6 routing: DHCPv6 with prefix delegation, SLAAC or static on the WAN, and router advertisements inside, with no renumbering at a failover.</li>
-              <li>WireGuard for remote users and site-to-site tunnels, and as a client of a VPN provider for chosen networks, with a kill switch.</li>
-              <li>Two NICs and no VLANs by default; VLAN trunks and LACP or active-backup bonds when you have them.</li>
+              <li>Raw nftables rules beside zone policy, for what zones don't cover. Sparewall never flushes anyone else's tables.</li>
+              <li>IPv6 by DHCPv6 with prefix delegation, SLAAC or static, with router advertisements inside and no renumbering at a failover.</li>
+              <li>Two NICs by default; VLAN trunks and LACP or active-backup bonds when you have them, on VMs or hardware.</li>
             </ul>
           </div>
           <div class="card">
-            <h3>One document, safe changes</h3>
+            <h3>Day-to-day operations</h3>
             <ul>
-              <li>One JSON or YAML document describes the whole deployment. Every change is a numbered generation to diff, list and roll back to.</li>
-              <li>Apply with a confirm timer: a change that cuts you off undoes itself.</li>
-              <li>The CLI, your scripts and the web UI drive the same API. The web UI is off by default.</li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>Operations</h3>
-            <ul>
-              <li>Prometheus metrics for an outside Prometheus, or a Prometheus on the node that keeps their history, queried through the API.</li>
+              <li>Backups run on a schedule and prune themselves to a retention policy; check the password from your workstation before you need it.</li>
               <li>Logs forwarded to any syslog collector, over UDP, TCP, TLS or RELP.</li>
-              <li>A background check for new releases, shown in <code>sparewall status</code>, the login banner and the web UI.</li>
-              <li>Scheduled, encrypted backups of the configuration and secrets with restic, pruned to a retention policy.</li>
-              <li>The CLI for Linux and macOS, x86_64 or arm64, from Homebrew or the release.</li>
+              <li>The CLI for Linux and macOS, x86_64 or arm64, from Homebrew, with shell completions and <code>-o json</code> for scripts.</li>
             </ul>
           </div>
           <div class="card planned">
