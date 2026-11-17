@@ -243,6 +243,34 @@
       </div>
     </section>
 
+    <section id="compare">
+      <div class="wrap">
+        <h2>How it compares</h2>
+        <p class="intro">Sparewall sits beside the open-source firewalls and the vendor routers a homelab or small office would also consider. The basics, from each project's own documentation:</p>
+        <div class="compare-wrap">
+          <table class="compare">
+            <thead>
+              <tr><th scope="col">Project</th><th scope="col">Based on</th><th scope="col">License</th><th scope="col">Runs on</th><th scope="col">Configured by</th></tr>
+            </thead>
+            <tbody>
+              <tr class="us"><th scope="row"><strong>Sparewall</strong></th><td data-label="Based on">Linux (Fedora bootc), nftables</td><td data-label="License">GPL-3.0-only</td><td data-label="Runs on">Your hardware or a VM</td><td data-label="Configured by">One document, through the CLI, HTTP API or web UI</td></tr>
+              <tr><th scope="row"><a href="https://docs.opnsense.org/intro.html">OPNsense</a></th><td data-label="Based on">FreeBSD</td><td data-label="License">BSD-2-Clause</td><td data-label="Runs on">Your hardware or a VM</td><td data-label="Configured by">Web UI</td></tr>
+              <tr><th scope="row"><a href="https://docs.netgate.com/pfsense/en/latest/general/index.html">pfSense CE</a></th><td data-label="Based on">FreeBSD</td><td data-label="License">Apache-2.0</td><td data-label="Runs on">Your hardware or a VM</td><td data-label="Configured by">Web UI</td></tr>
+              <tr><th scope="row"><a href="https://openwrt.org/docs/guide-user/base-system/uci">OpenWrt</a></th><td data-label="Based on">Linux</td><td data-label="License">GPL-2.0-only</td><td data-label="Runs on">Routers and x86</td><td data-label="Configured by">UCI files in <code>/etc/config</code>, LuCI web UI</td></tr>
+              <tr><th scope="row"><a href="https://help.mikrotik.com/docs/spaces/ROS/pages/328149/RouterOS">MikroTik RouterOS</a></th><td data-label="Based on">Linux kernel, proprietary system</td><td data-label="License">Proprietary; included with MikroTik hardware, licensed per install elsewhere</td><td data-label="Runs on">MikroTik hardware, x86, VMs (CHR)</td><td data-label="Configured by">CLI, WinBox, WebFig</td></tr>
+              <tr><th scope="row"><a href="https://help.ui.com/hc/en-us/articles/115003173168-Zone-Based-Firewalls-in-UniFi">Ubiquiti UniFi</a></th><td data-label="Based on">UniFi OS, proprietary</td><td data-label="License">Proprietary</td><td data-label="Runs on">UniFi gateways</td><td data-label="Configured by">UniFi Network application</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="checks">
+          <li>The whole configuration is one document you can keep in git, and a change that cuts you off undoes itself unless you confirm it.</li>
+          <li>The OS is an immutable, signed image: an upgrade or a rollback is a reboot.</li>
+          <li>An active/standby pair, with connection and DHCP lease sync, is part of the open-source base.</li>
+        </ul>
+        <p class="more">Something here out of date? <a href="https://github.com/sparewall/sparewall.github.io/issues">Tell us</a>.</p>
+      </div>
+    </section>
+
     <section id="install">
       <div class="wrap">
         <h2>Install</h2>
