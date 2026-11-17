@@ -56,6 +56,11 @@ to change what the site says about it. By hand, when they change:
   add the feature to the cards.
 - The `site.yaml` example in "How a change happens" must stay a valid
   document for the latest release.
+- `assets/og.png`, the preview image for shared links, is a render of
+  the hero's diagram: regenerate it when the diagram or the tagline
+  changes. `og-image.py` is a local helper, not part of the deployed
+  site: it writes `og-card.html` into an assembled site, and its
+  docstring gives the Chrome command that renders that page to the PNG.
 - New UI screenshots go in `assets/screenshots/` as WebP, a light and a
   dark one each, 1600 pixels wide, taken from the demo
   (`tests/vm/demo.sh` in sparewall). Check them for anything that

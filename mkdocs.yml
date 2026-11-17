@@ -3,7 +3,7 @@
 # docs/; the theme is this site's own, with no JavaScript. build-docs.sh
 # runs a copy of this file, dropping the HTTP API before 0.3.0.
 site_name: !ENV [DOCS_SITE_NAME, "Sparewall documentation"]
-site_url: https://sparewall.org/docs/
+site_url: !ENV [DOCS_SITE_URL, "https://sparewall.org/docs/"]
 repo_url: https://github.com/sparewall/sparewall
 docs_dir: !ENV DOCS_DIR
 use_directory_urls: true

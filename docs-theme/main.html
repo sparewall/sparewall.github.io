@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% if page and page.title and not page.is_homepage %}{{ page.title }} &middot; {% endif %}Sparewall {{ config.extra.version }} documentation</title>
   <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="{% if page and page.title and not page.is_homepage %}{{ page.title }} &middot; {% endif %}Sparewall {{ config.extra.version }} documentation">
+  <meta property="og:type" content="website">
+  {% if page and page.canonical_url %}<meta property="og:url" content="{{ page.canonical_url }}">{% endif %}
+  <meta property="og:image" content="https://sparewall.org/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Sparewall, an open-source Linux firewall: One document. One image. One node or a pair. Beside it, a diagram of a Sparewall pair.">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="{{ (config.extra.root ~ 'assets/logo.svg') | url }}" type="image/svg+xml">
   <link rel="stylesheet" href="{{ (config.extra.root ~ 'assets/style.css') | url }}">
   <link rel="stylesheet" href="{{ (config.extra.root ~ 'assets/docs.css') | url }}">
@@ -47,7 +55,12 @@
   <footer class="site-footer">
     <div class="wrap">
       <span>Sparewall &middot; GPL-3.0-only</span>
-      <span><a href="https://github.com/sparewall">github.com/sparewall</a></span>
+      <nav aria-label="Footer">
+        <a href="{{ '.' | url }}">Docs</a>
+        <a href="{{ (config.extra.root ~ 'releases/') | url }}">Releases</a>
+        <a href="https://github.com/sparewall/sparewall/issues">Issues</a>
+        <a href="https://github.com/sparewall">GitHub</a>
+      </nav>
     </div>
   </footer>
 </body>

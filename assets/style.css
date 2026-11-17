@@ -68,6 +68,13 @@ code { font-family: var(--mono); font-size: 0.9em; }
 .site-header nav { display: flex; gap: 20px; flex-wrap: wrap; }
 .site-header nav a { color: var(--muted); text-decoration: none; font-size: 0.95rem; }
 .site-header nav a:hover { color: var(--text); }
+@media (max-width: 520px) {
+  /* Fit the nav on one line under the brand: Web UI is a section of the
+     home page, a scroll away. */
+  .site-header nav { gap: 14px; }
+  .site-header nav a { font-size: 0.9rem; }
+  .site-header nav .wide { display: none; }
+}
 
 /* Hero */
 .hero { padding: 64px 0 48px; }
@@ -167,6 +174,7 @@ section .intro { color: var(--muted); margin: 0 0 32px; max-width: 46em; }
 .site-footer { border-top: 1px solid var(--border); padding: 32px 0 48px; color: var(--muted); font-size: 0.9rem; }
 .site-footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .site-footer a { color: var(--muted); }
+.site-footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 
 @media (max-width: 860px) {
   .hero { padding: 40px 0 32px; }

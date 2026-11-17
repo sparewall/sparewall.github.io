@@ -68,4 +68,5 @@ PY
 DOCS_DIR=$work/docs SPAREWALL_TAG=$tag SPAREWALL_VERSION=${tag#v} \
 DOCS_ROOT=${preview:+../}../ DOCS_PREVIEW=${preview:-} \
 DOCS_SITE_NAME="Sparewall ${tag#v} documentation" \
+DOCS_SITE_URL="https://sparewall.org/docs/${preview:+next/}" \
     mkdocs build -q -f "$work/mkdocs.yml" -d "$(realpath -m "$out")"
