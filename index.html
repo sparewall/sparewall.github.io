@@ -127,7 +127,7 @@
               <li>Named users and API tokens, each with a role: monitor, viewer, operator or admin.</li>
               <li>Secrets are encrypted on the node, bound to its TPM where it has one, and shared with the peer.</li>
               <li><code>management.sources</code> limits which hosts reach SSH and HTTPS.</li>
-              <li>Sparewall's own services run in their own enforcing SELinux domains.</li>
+              <li>The coordinator runs in its own enforcing SELinux domain, and the web UI's gateway is an unprivileged, sandboxed service.</li>
             </ul>
           </div>
           <div class="card">
