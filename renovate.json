@@ -1,6 +1,29 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["config:recommended"],
+  "semanticCommits": "disabled",
+  "timezone": "UTC",
+  "schedule": ["before 6am on monday"],
+  "major": {
+    "dependencyDashboardApproval": true
+  },
+  "pip-compile": {
+    "managerFilePatterns": ["/(^|/)requirements-docs\\.txt$/"]
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "requirements-docs.txt is generated from requirements-docs.in by uv pip compile; the pip-compile manager updates the .in and regenerates it with hashes, so don't edit the .txt directly.",
+      "matchManagers": ["pip_requirements"],
+      "enabled": false
+    },
+    {
+      "description": "One weekly PR for every non-major update.",
+      "matchUpdateTypes": ["minor", "patch", "digest", "pinDigest"],
+      "groupName": "site dependencies"
+    }
   ]
 }
