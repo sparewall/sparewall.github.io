@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "semanticCommits": "disabled",
+  "timezone": "UTC",
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "major": {
+    "dependencyDashboardApproval": true
+  },
+  "pip-compile": {
+    "managerFilePatterns": [
+      "/(^|/)requirements-docs\\.txt$/"
+    ]
+  },
+  "pip_requirements": {
+    "enabled": false
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 6am on monday"
+    ]
+  },
+  "packageRules": [
+    {
+      "description": "One weekly PR for every non-major update.",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest",
+        "pinDigest"
+      ],
+      "groupName": "site dependencies"
+    }
+  ]
+}
