@@ -34,7 +34,8 @@ PATH=$PWD/.venv/bin:$PATH ./build-docs.sh --preview ../sparewall-next v0.3.0-rc1
 ```
 
 `requirements-docs.txt` is generated from `requirements-docs.in` with
-`uv pip compile --generate-hashes --python-version 3.12 requirements-docs.in --output-file requirements-docs.txt`.
+`uv pip compile --generate-hashes --python-version=3.12 requirements-docs.in --output-file=requirements-docs.txt`
+(written with `=`, which Renovate needs to read the header).
 
 Pull requests build the site without deploying it. Pushing to `main` deploys through `.github/workflows/pages.yml`, which
 assembles the home page and the docs into `_site/` and publishes them. It
