@@ -373,3 +373,11 @@ h2 .badge { vertical-align: middle; margin-left: 8px; font-size: 0.75rem; letter
   .compare td::before { content: attr(data-label) ": "; color: var(--text); font-weight: 600; }
 }
 .compare-wrap + .note { margin: 10px 0 0; color: var(--muted); font-size: 0.9rem; }
+
+/* Hardware requirements */
+.reqs { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.reqs th, .reqs td { text-align: left; vertical-align: top; padding: 6px 8px 6px 0; border-bottom: 1px solid var(--border); }
+.reqs tr:last-child th, .reqs tr:last-child td { border-bottom: 0; }
+.reqs thead th { color: var(--muted); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.reqs tbody th { font-weight: 600; }
+.reqs td { color: var(--muted); }
