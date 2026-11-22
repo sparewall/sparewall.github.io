@@ -56,6 +56,9 @@ to change what the site says about it. By hand, when they change:
   add the feature to the cards.
 - The `site.yaml` example in "How a change happens" must stay a valid
   document for the latest release.
+- The hardware table and port layouts in "Who it's for" repeat the
+  requirements in sparewall's `docs/getting-started.md`: keep them the
+  same.
 - `assets/og.png`, the preview image for shared links, is a render of
   the hero's diagram: regenerate it when the diagram or the tagline
   changes. `og-image.py` is a local helper, not part of the deployed

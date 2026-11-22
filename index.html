@@ -99,7 +99,7 @@
             <li><strong>Secure by default.</strong> An immutable, signed bootc image, internal services written in Rust, and replication between the nodes inside WireGuard.</li>
             <li><strong>DHCP and DNS in containers.</strong> ISC Kea and Unbound run as containers, pinned by digest.</li>
             <li><strong>WireGuard VPNs.</strong> For remote users, to other sites, and out through a VPN provider. Peers are entries in the document, and each VPN is a zone like any other.</li>
-            <li><strong>Metrics and backups.</strong> Prometheus metrics, with their history kept on the node if you like, and encrypted configuration backups with restic.</li>
+            <li><strong>Metrics and backups.</strong> Prometheus metrics, with their history kept on the node and charted in the web UI if you like, and encrypted configuration backups with restic.</li>
             <li><strong>API-driven.</strong> The CLI, your scripts and the web UI all drive the same API. The web UI stays off until you turn it on.</li>
           </ol>
         </figure>
@@ -141,12 +141,13 @@
             <ul>
               <li>Raw nftables rules beside zone policy, for what zones don't cover. Sparewall never flushes anyone else's tables.</li>
               <li>IPv6 by DHCPv6 with prefix delegation, SLAAC or static, with router advertisements inside and no renumbering at a failover.</li>
-              <li>Two NICs by default; VLAN trunks and LACP or active-backup bonds when you have them, on VMs or hardware.</li>
+              <li>Rules can name a host by its suffix in a delegated prefix, and keep matching when the ISP renumbers it.</li>
             </ul>
           </div>
           <div class="card">
             <h3>Day-to-day operations</h3>
             <ul>
+              <li>Troubleshoot without SSH: logs, logged traffic, neighbours and routes, ping, traceroute, DNS lookups and short packet captures, from the CLI or the web UI, and from either node of a pair.</li>
               <li>Backups run on a schedule and prune themselves to a retention policy; check the password from your workstation before you need it.</li>
               <li>Logs forwarded to any syslog collector, over UDP, TCP, TLS or RELP.</li>
               <li>The CLI for Linux and macOS, x86_64 or arm64, from Homebrew, with shell completions and <code>-o json</code> for scripts.</li>
@@ -193,6 +194,8 @@
         </div>
         <ul class="checks">
           <li>Each page offers only what the user's role allows, and the node checks every call regardless.</li>
+          <li>The status page charts throughput, CPU, memory, connections and rule hits over the last hour, day or week, when the node keeps its metrics history.</li>
+          <li>The Logs, Logged traffic and Network pages cover troubleshooting, down to a packet capture downloaded as a pcap. In a pair, each has a switch to the other node's view.</li>
           <li>Admins see when an update is available and can start the upgrade there, and manage users and tokens. A new password is hashed in the browser, so only the hash reaches the node.</li>
           <li>The UI loads nothing from outside the node.</li>
           <li>Scripts use the same API with a token: <code>POST /call/&lt;interface&gt;.&lt;Method&gt;</code>, described by an OpenAPI 3.1 document at <code>/openapi.json</code>. The UI's API page lists every call with the role it needs and a <code>curl</code> example.</li>
@@ -275,6 +278,46 @@
           <li>An active/standby pair, with connection and DHCP lease sync, is part of the open-source base.</li>
         </ul>
         <p class="more">Something here out of date? <a href="https://github.com/sparewall/sparewall.github.io/issues">Tell us</a>.</p>
+      </div>
+    </section>
+
+    <section id="fit">
+      <div class="wrap">
+        <h2>Who it's for</h2>
+        <p class="intro">Homelabs and small offices: one node, or an active/standby pair when the network has to stay up through a failure or an upgrade.</p>
+        <div class="grid groups">
+          <div class="card">
+            <h3>What it runs on</h3>
+            <ul>
+              <li>A mini PC or any other x86_64 machine, with any NIC the Fedora kernel supports.</li>
+              <li>A VM on QEMU/KVM with virtio NICs. The image carries the QEMU guest agent; give a libvirt VM a virtual TPM.</li>
+              <li>A TPM is optional and recommended: secrets are sealed to it where there is one.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Port layouts</h3>
+            <ul>
+              <li>Two ports, WAN and LAN, behind a plain switch with no VLANs: the usual setup.</li>
+              <li>One port carrying every network as a tagged VLAN.</li>
+              <li>LACP or active-backup bonds. A pair also needs a link between its nodes for sync: a network of its own, or the LAN.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Hardware</h3>
+            <table class="reqs">
+              <thead>
+                <tr><td></td><th scope="col">Minimum</th><th scope="col">Recommended</th></tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">CPU</th><td>2 cores</td><td>2 or more</td></tr>
+                <tr><th scope="row">Memory</th><td>2 GiB</td><td>4 GiB</td></tr>
+                <tr><th scope="row">Disk</th><td>16 GB</td><td>32 GB</td></tr>
+                <tr><th scope="row">Ports</th><td>One, as a VLAN trunk</td><td>Two or more</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="more"><a href="docs/getting-started/#requirements">The requirements in the documentation</a> explain what a node uses its memory and disk for.</p>
       </div>
     </section>
 
