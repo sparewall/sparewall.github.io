@@ -350,7 +350,7 @@ h2 .badge { vertical-align: middle; margin-left: 8px; font-size: 0.75rem; letter
 /* Feature groups */
 .groups .card ul { margin: 0; padding-left: 1.1em; color: var(--muted); font-size: 0.97rem; }
 .groups .card li { margin: 6px 0; }
-.groups .card.planned { border-style: dashed; background: transparent; }
+.groups .card.planned { border-style: dashed; background: transparent; grid-column: 1 / -1; }
 @media (max-width: 1000px) and (min-width: 861px) { .groups { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* Comparison table */
