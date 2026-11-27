@@ -1,0 +1,94 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "semanticCommits": "disabled",
+  "timezone": "UTC",
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "automergeType": "pr",
+  "automergeStrategy": "squash",
+  "platformAutomerge": false,
+  "minimumReleaseAge": "3 days",
+  "internalChecksFilter": "strict",
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "description": "Security fixes are opened at once, whatever the schedule, and still wait for the build.",
+    "minimumReleaseAge": null,
+    "labels": [
+      "security"
+    ]
+  },
+  "pip-compile": {
+    "managerFilePatterns": [
+      "/(^|/)requirements-docs\\.txt$/"
+    ]
+  },
+  "pip_requirements": {
+    "enabled": false
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 6am on monday"
+    ],
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "description": "Non-major updates merge themselves once the site's build (pages.yml, which builds the whole site and its docs on a pull request) has passed.",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest",
+        "pinDigest"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Major updates open a pull request each, for review; never merged automatically.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "One weekly PR for the Python packages the build installs.",
+      "matchManagers": [
+        "pip-compile"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "site dependencies"
+    },
+    {
+      "description": "One weekly PR for the GitHub Actions; they stay pinned to commit SHAs.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest",
+        "pinDigest"
+      ],
+      "groupName": "github actions"
+    },
+    {
+      "description": "These actions only run when the site deploys from main, never on a pull request, so no check covers an update to them: it waits for review (with its group).",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDepNames": [
+        "actions/configure-pages",
+        "actions/upload-pages-artifact",
+        "actions/deploy-pages"
+      ],
+      "automerge": false
+    }
+  ]
+}
